@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../widgets/animated_widgets.dart';
+import '../widgets/bottom_nav_bar.dart';
 import 'product_detail_screen.dart';
 
 class ProductListingScreen extends StatefulWidget {
@@ -28,10 +29,11 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
   final List<Product> _products = [
     Product(
       id: '1',
-      name: 'Loop silicone strap',
+      name: 'Loop silicone strong',
       price: 15.25,
-      imageUrl: 'assets/images/watch_strap1.png',
-      description: 'High-quality silicone strap for smart watches.',
+      imageUrl: 'assets/images/watch1.png',
+      description: 'Loop silicone strong band',
+      category: 'Smart Watches',
       colors: [Colors.black, Colors.blue, Colors.purple],
     ),
     Product(
@@ -39,30 +41,34 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
       name: 'K800 Ultra smart watch',
       price: 32.00,
       imageUrl: 'assets/images/watch2.png',
-      description: 'Ultra-thin smart watch with advanced features.',
-      colors: [Colors.black, Colors.grey, Colors.white],
+      description: 'K800 Ultra smart watch',
+      category: 'Smart Watches',
+      colors: [Colors.black, Colors.grey, Colors.blue],
     ),
     Product(
       id: '3',
-      name: 'Waterproof sport M4 t...',
+      name: 'Waterproof sport M4',
       price: 8.95,
       imageUrl: 'assets/images/watch3.png',
-      description: 'Waterproof sports tracker with heart rate monitoring.',
-      colors: [Colors.black, Colors.blue, Colors.red],
+      description: 'Waterproof sport M4 tracker',
+      category: 'Smart Watches',
+      colors: [Colors.black, Colors.blue, Colors.orange],
     ),
     Product(
       id: '4',
       name: 'M6 Smart watch IP67',
       price: 12.00,
       imageUrl: 'assets/images/watch4.png',
-      description: 'IP67 waterproof smart watch with fitness tracking.',
-      colors: [Colors.black, Colors.orange, Colors.grey, Colors.white],
+      description: 'M6 Smart watch IP67 waterproof',
+      category: 'Smart Watches',
+      colors: [Colors.white, Colors.grey, Colors.black],
     ),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -70,36 +76,32 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
               floating: true,
               leading: ScaleOnTap(
                 onTap: () => Navigator.pop(context),
-                child: Container(
-                  margin: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(Icons.arrow_back, color: Colors.black),
-                ),
+                child: const Icon(Icons.arrow_back, color: Colors.black),
               ),
               title: Text(
                 widget.title,
-                style: Theme.of(context).textTheme.titleLarge,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               actions: [
-                ScaleOnTap(
-                  onTap: () {
-                    // Open search screen
+                IconButton(
+                  icon: const Icon(Icons.tune, color: Colors.black),
+                  onPressed: () {
+                    // Show filter/sort options
                   },
-                  child: Container(
-                    margin: const EdgeInsets.all(8),
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.search, color: Colors.black),
-                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.search, color: Colors.black),
+                  onPressed: () {
+                    // Navigate to search screen
+                  },
                 ),
               ],
-              backgroundColor: Colors.transparent,
+              centerTitle: true,
+              backgroundColor: Colors.white,
               elevation: 0,
             ),
             SliverToBoxAdapter(
@@ -123,7 +125,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                           });
                         },
                         backgroundColor: Colors.white,
-                        selectedColor: Theme.of(context).primaryColor,
+                        selectedColor: const Color(0xFF21D4B4),
                         labelStyle: TextStyle(
                           color: isSelected ? Colors.white : Colors.black,
                         ),
@@ -131,7 +133,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                           borderRadius: BorderRadius.circular(20),
                           side: BorderSide(
                             color: isSelected
-                                ? Theme.of(context).primaryColor
+                                ? const Color(0xFF21D4B4)
                                 : Colors.grey[300]!,
                           ),
                         ),
@@ -146,132 +148,96 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
               sliver: SliverGrid(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  childAspectRatio: 0.8,
-                  crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 0.8,
                 ),
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     final product = _products[index];
-                    return FadeInWidget(
-                      delay: Duration(milliseconds: 100 * index),
-                      child: ScaleOnTap(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ProductDetailScreen(product: product),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ProductDetailScreen(product: product),
                           ),
-                          child: Stack(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: ClipRRect(
-                                      borderRadius: const BorderRadius.vertical(
-                                        top: Radius.circular(16),
-                                      ),
-                                      child: Hero(
-                                        tag: 'product-${product.id}',
-                                        child: Image.asset(
-                                          product.imageUrl,
-                                          fit: BoxFit.cover,
-                                          width: double.infinity,
-                                        ),
-                                      ),
-                                    ),
+                        );
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Stack(
+                              children: [
+                                Container(
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade50,
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            ...List.generate(
-                                              product.colors.length,
-                                              (index) => Container(
-                                                width: 16,
-                                                height: 16,
-                                                margin: const EdgeInsets.only(
-                                                    right: 4),
-                                                decoration: BoxDecoration(
-                                                  color: product.colors[index],
-                                                  shape: BoxShape.circle,
-                                                ),
-                                              ),
-                                            ),
-                                            Text(
-                                              'All ${product.colors.length} Colors',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey[600],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          product.name,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        Text(
-                                          '\$${product.price.toStringAsFixed(2)}',
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Positioned(
-                                top: 8,
-                                right: 8,
-                                child: Container(
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    product.isFavorite
-                                        ? Icons.favorite
-                                        : Icons.favorite_border,
-                                    size: 20,
-                                    color: product.isFavorite
-                                        ? Colors.red
-                                        : Colors.grey,
+                                  child: Image.asset(
+                                    product.imageUrl,
+                                    fit: BoxFit.contain,
                                   ),
                                 ),
-                              ),
-                            ],
+                                Positioned(
+                                  right: 8,
+                                  top: 8,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.black,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.favorite_border,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: product.colors.map((color) {
+                              return Container(
+                                width: 16,
+                                height: 16,
+                                margin: const EdgeInsets.only(right: 4),
+                                decoration: BoxDecoration(
+                                  color: color,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.grey.shade200,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            product.name,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '\$${product.price.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF21D4B4),
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   },
@@ -282,6 +248,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
           ],
         ),
       ),
+      bottomNavigationBar: const BottomNavBar(currentIndex: 1),
     );
   }
 }

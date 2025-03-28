@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/product.dart';
-import '../widgets/animated_widgets.dart';
-import '../widgets/bottom_nav_bar.dart';
 
-class WishlistScreen extends StatelessWidget {
-  const WishlistScreen({super.key});
+class CartScreen extends StatelessWidget {
+  const CartScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +11,7 @@ class WishlistScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          'Wishlist',
+          'My Cart',
           style: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -27,13 +24,13 @@ class WishlistScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.favorite_border_outlined,
+              Icons.shopping_cart_outlined,
               size: 64,
               color: Colors.grey.shade300,
             ),
             const SizedBox(height: 16),
             Text(
-              'Your wishlist is empty',
+              'Your cart is empty',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey.shade600,
@@ -42,7 +39,7 @@ class WishlistScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Save items to your wishlist',
+              'Add items to start a cart',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey.shade400,

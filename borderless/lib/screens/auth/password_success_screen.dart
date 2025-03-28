@@ -16,7 +16,7 @@ class PasswordSuccessScreen extends StatelessWidget {
               Container(
                 width: 120,
                 height: 120,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Color(0xFFE8F8EA),
                   shape: BoxShape.circle,
                 ),
@@ -24,14 +24,14 @@ class PasswordSuccessScreen extends StatelessWidget {
                   child: Container(
                     width: 80,
                     height: 80,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.black,
                       shape: BoxShape.circle,
                     ),
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.lock_outline,
                           color: Colors.white,
                           size: 32,
@@ -42,11 +42,11 @@ class PasswordSuccessScreen extends StatelessWidget {
                           child: Container(
                             width: 24,
                             height: 24,
-                            decoration: BoxDecoration(
-                              color: Color(0xFF4CD964),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF34C759),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.check,
                               color: Colors.white,
                               size: 16,
@@ -78,12 +78,13 @@ class PasswordSuccessScreen extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 32),
+              const Spacer(),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/login');
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil('/home', (route) => false);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
@@ -94,10 +95,34 @@ class PasswordSuccessScreen extends StatelessWidget {
                     ),
                   ),
                   child: const Text(
+                    'Get Started',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil('/login', (route) => false);
+                  },
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
                     'Login',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
+                      color: Color(0xFF34C759),
                     ),
                   ),
                 ),

@@ -13,19 +13,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<OnboardingData> _pages = [
     OnboardingData(
-      image: 'assets/images/onboarding1.png',
+      image: 'assets/images/onbording1.png',
       title: 'Explore a wide range of products',
       description:
           'Explore a wide range of products at your fingertips. Borderless offers an extensive collection to suit your needs.',
     ),
     OnboardingData(
-      image: 'assets/images/onboarding2.png',
+      image: 'assets/images/onbording2.png',
       title: 'Unlock exclusive offers and discounts',
       description:
           'Get access to limited-time deals and special promotions available only to our valued customers.',
     ),
     OnboardingData(
-      image: 'assets/images/onboarding3.png',
+      image: 'assets/images/onbording3.png',
       title: 'Safe and secure payments',
       description:
           'Borderless employs industry-leading encryption and trusted payment gateways to safeguard your financial information.',
@@ -40,7 +40,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -49,15 +50,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       Text(
                         'B',
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF4CD964), // iOS green color
+                          color: const Color(0xFF21D4B4),
                         ),
                       ),
                       const Text(
                         'ORDERLESS',
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
                         ),
@@ -66,15 +67,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                   TextButton(
                     onPressed: () {
-                      // Navigate to home screen
                       Navigator.pushReplacementNamed(context, '/home');
                     },
-                    child: Text(
+                    style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFF21D4B4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                    ),
+                    child: const Text(
                       'Skip for now',
-                      style: TextStyle(
-                        color: Color(0xFF4CD964), // iOS green color
-                        fontSize: 16,
-                      ),
+                      style: TextStyle(fontSize: 13),
                     ),
                   ),
                 ],
@@ -94,100 +96,99 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Column(
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
                       _pages.length,
                       (index) => Container(
-                        margin: const EdgeInsets.only(right: 8),
-                        height: 8,
-                        width: 8,
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        height: 6,
+                        width: 6,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: _currentPage == index
-                              ? Color(0xFF4CD964) // iOS green color
+                              ? const Color(0xFF21D4B4)
                               : Colors.grey.shade300,
                         ),
                       ),
                     ),
                   ),
+                  const SizedBox(height: 20),
                   if (_currentPage < _pages.length - 1)
-                    ElevatedButton(
-                      onPressed: () {
-                        _pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 16,
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          minimumSize: const Size(100, 40),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
+                        child: const Text('Next'),
                       ),
-                      child: const Text('Next'),
                     )
                   else
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        OutlinedButton(
+                        TextButton(
                           onPressed: () {
-                            // Navigate to login screen
                             Navigator.pushReplacementNamed(context, '/login');
                           },
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.black,
-                            side: const BorderSide(color: Colors.black),
+                          style: TextButton.styleFrom(
+                            foregroundColor: const Color(0xFF21D4B4),
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 16,
+                              horizontal: 24,
+                              vertical: 12,
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
+                            minimumSize: const Size(100, 40),
                           ),
                           child: const Text('Login'),
                         ),
-                        const SizedBox(width: 16),
                         ElevatedButton(
                           onPressed: () {
-                            // Navigate to get started screen
                             Navigator.pushReplacementNamed(context, '/signup');
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.black,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 16,
+                              horizontal: 24,
+                              vertical: 12,
                             ),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+                              borderRadius: BorderRadius.circular(24),
                             ),
+                            minimumSize: const Size(140, 40),
                           ),
-                          child: Row(
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text('Get Started'),
-                              const SizedBox(width: 8),
-                              Icon(
-                                Icons.arrow_forward,
-                                size: 16,
-                                color: Colors.white,
-                              ),
+                              Text('Get Started'),
+                              SizedBox(width: 8),
+                              Icon(Icons.arrow_forward, size: 16),
                             ],
                           ),
                         ),
                       ],
                     ),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
@@ -198,34 +199,39 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildPage(OnboardingData data) {
+    final size = MediaQuery.of(context).size;
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          const SizedBox(height: 20),
           Image.asset(
             data.image,
-            height: 240,
+            height: size.height * 0.25,
+            fit: BoxFit.contain,
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 32),
           Text(
             data.title,
             style: const TextStyle(
-              fontSize: 24,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
-          Text(
-            data.description,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-              height: 1.5,
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              data.description,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
         ],
       ),

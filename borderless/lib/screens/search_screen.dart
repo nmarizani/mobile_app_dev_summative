@@ -30,6 +30,7 @@ class _SearchScreenState extends State<SearchScreen> {
       imageUrl: 'assets/images/nike_shoes.png',
       description:
           'Nike Air Jordan Retro 1 High OG sneakers in classic colorway.',
+      category: 'Fashion',
       colors: [Colors.red, Colors.green, Colors.blue],
     ),
     Product(
@@ -39,6 +40,7 @@ class _SearchScreenState extends State<SearchScreen> {
       imageUrl: 'assets/images/glasses.png',
       description:
           'Classic black glasses with modern design and UV protection.',
+      category: 'Fashion',
       colors: [Colors.black, Colors.brown],
     ),
   ];
@@ -53,181 +55,106 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: ScaleOnTap(
-          onTap: () => Navigator.pop(context),
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(8),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Image.asset(
+                    'assets/images/logo.png',
+                    height: 24,
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.close),
+                  ),
+                ],
+              ),
             ),
-            child: const Icon(Icons.arrow_back, color: Colors.black),
-          ),
-        ),
-        title: Container(
-          height: 40,
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: 'Search',
-              prefixIcon: const Icon(Icons.search),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.tune),
-                onPressed: () {
-                  // Show filter dialog
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => const FilterBottomSheet(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Container(
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search',
+                    hintStyle: TextStyle(
+                      color: Colors.grey.shade400,
+                      fontSize: 14,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: Colors.grey.shade400,
+                      size: 20,
+                    ),
+                    suffixIcon: Icon(
+                      Icons.tune,
+                      color: Colors.grey.shade400,
+                      size: 20,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                  ),
+                  onChanged: (value) {
+                    // Implement search logic
+                    setState(() {});
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'RECENT SEARCH',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _recentSearches.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(
+                      _recentSearches[index],
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    trailing: const Icon(
+                      Icons.arrow_forward,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
+                    onTap: () {
+                      _searchController.text = _recentSearches[index];
+                      setState(() {});
+                    },
                   );
                 },
               ),
-              border: InputBorder.none,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             ),
-            onChanged: (value) {
-              // Implement search logic
-              setState(() {});
-            },
-          ),
+          ],
         ),
       ),
-      body: _searchController.text.isEmpty
-          ? ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                Text(
-                  'RECENT SEARCH',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: Colors.grey,
-                      ),
-                ),
-                const SizedBox(height: 16),
-                ...List.generate(
-                  _recentSearches.length,
-                  (index) => FadeInWidget(
-                    delay: Duration(milliseconds: 50 * index),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.history),
-                      title: Text(_recentSearches[index]),
-                      trailing: const Icon(Icons.north_east),
-                      onTap: () {
-                        _searchController.text = _recentSearches[index];
-                        setState(() {});
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            )
-          : GridView.builder(
-              padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.8,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              itemCount: _searchResults.length,
-              itemBuilder: (context, index) {
-                final product = _searchResults[index];
-                return FadeInWidget(
-                  delay: Duration(milliseconds: 100 * index),
-                  child: ScaleOnTap(
-                    onTap: () {
-                      // Navigate to product detail
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Stack(
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: ClipRRect(
-                                  borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(16),
-                                  ),
-                                  child: Image.asset(
-                                    product.imageUrl,
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      product.name,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    Text(
-                                      '\$${product.price.toStringAsFixed(2)}',
-                                      style: TextStyle(
-                                        color: Theme.of(context).primaryColor,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                product.isFavorite
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                size: 20,
-                                color: product.isFavorite
-                                    ? Colors.red
-                                    : Colors.grey,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
     );
   }
 }

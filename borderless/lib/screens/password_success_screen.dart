@@ -26,12 +26,13 @@ class PasswordSuccessScreen extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.black, width: 2),
+                color: Colors.white,
               ),
-              child: const Icon(
-                Icons.lock_open_rounded,
-                size: 48,
-                color: Colors.black,
+              child: Image.asset(
+                'assets/images/lock_success.png',
+                width: 80,
+                height: 80,
+                fit: BoxFit.contain,
               ),
             ),
             const SizedBox(height: 24),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/category.dart';
 import '../widgets/animated_widgets.dart';
+import '../widgets/bottom_nav_bar.dart';
 
 class SubcategoriesScreen extends StatelessWidget {
   final Category category;
@@ -12,19 +13,41 @@ class SubcategoriesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Mock data
-    final List<Category> subcategories = [
+    final List<Category> _subcategories = [
       Category(
-          id: '1', name: 'Smartphones', icon: 'assets/icons/smartphone.png'),
-      Category(id: '2', name: 'Laptops', icon: 'assets/icons/laptop.png'),
-      Category(id: '3', name: 'Tablets', icon: 'assets/icons/tablet.png'),
+        id: '1',
+        name: 'Laptops',
+        iconAsset: 'assets/images/laptop.png',
+      ),
       Category(
-          id: '4', name: 'Accessories', icon: 'assets/icons/accessories.png'),
-      Category(id: '5', name: 'Cameras', icon: 'assets/icons/camera.png'),
-      Category(id: '6', name: 'Audio', icon: 'assets/icons/audio.png'),
+        id: '2',
+        name: 'Mobile phones',
+        iconAsset: 'assets/images/mobile.png',
+      ),
+      Category(
+        id: '3',
+        name: 'Headphones',
+        iconAsset: 'assets/images/headphones.png',
+      ),
+      Category(
+        id: '4',
+        name: 'Smart Watches',
+        iconAsset: 'assets/images/smartwatch.png',
+      ),
+      Category(
+        id: '5',
+        name: 'Mobile Cases',
+        iconAsset: 'assets/images/case.png',
+      ),
+      Category(
+        id: '6',
+        name: 'Monitors',
+        iconAsset: 'assets/images/monitor.png',
+      ),
     ];
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -32,23 +55,18 @@ class SubcategoriesScreen extends StatelessWidget {
               floating: true,
               leading: ScaleOnTap(
                 onTap: () => Navigator.pop(context),
-                child: Container(
-                  margin: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(Icons.arrow_back, color: Colors.black),
-                ),
+                child: const Icon(Icons.arrow_back, color: Colors.black),
               ),
-              title: FadeInWidget(
-                child: Text(
-                  category.name,
-                  style: Theme.of(context).textTheme.headlineSmall,
+              title: Text(
+                category.name,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               centerTitle: true,
-              backgroundColor: Colors.transparent,
+              backgroundColor: Colors.white,
               elevation: 0,
             ),
             SliverPadding(
@@ -62,60 +80,49 @@ class SubcategoriesScreen extends StatelessWidget {
                 ),
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    final subcategory = subcategories[index];
-                    return FadeInWidget(
-                      delay: Duration(milliseconds: 100 * index),
-                      child: ScaleOnTap(
-                        onTap: () {
-                          // Navigate to products
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 80,
-                                height: 80,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[100],
-                                  borderRadius: BorderRadius.circular(40),
-                                ),
-                                child: Image.asset(
-                                  subcategory.icon,
-                                  width: 40,
-                                  height: 40,
+                    final subcategory = _subcategories[index];
+                    return GestureDetector(
+                      onTap: () {
+                        // Navigate to products
+                      },
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: Colors.grey.shade200,
                                 ),
                               ),
-                              const SizedBox(height: 16),
-                              Text(
-                                subcategory.name,
-                                style: Theme.of(context).textTheme.titleMedium,
-                                textAlign: TextAlign.center,
+                              child: Image.asset(
+                                subcategory.iconAsset!,
+                                fit: BoxFit.contain,
                               ),
-                            ],
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 8),
+                          Text(
+                            subcategory.name,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
                     );
                   },
-                  childCount: subcategories.length,
+                  childCount: _subcategories.length,
                 ),
               ),
             ),
           ],
         ),
       ),
+      bottomNavigationBar: const BottomNavBar(currentIndex: 1),
     );
   }
 }

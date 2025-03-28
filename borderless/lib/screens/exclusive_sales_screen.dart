@@ -1,56 +1,79 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../widgets/animated_widgets.dart';
-import 'product_detail_screen.dart';
+import '../widgets/bottom_nav_bar.dart';
+import '../widgets/filter_bottom_sheet.dart';
 
-class ExclusiveSalesScreen extends StatefulWidget {
-  const ExclusiveSalesScreen({Key? key}) : super(key: key);
-
-  @override
-  State<ExclusiveSalesScreen> createState() => _ExclusiveSalesScreenState();
-}
-
-class _ExclusiveSalesScreenState extends State<ExclusiveSalesScreen> {
-  // Mock data
-  final List<Product> _products = [
-    Product(
-      id: '1',
-      name: 'Loop silicone strap headphones',
-      price: 15.25,
-      imageUrl: 'assets/images/headphone1.png',
-      description: 'High-quality wireless headphones with noise cancellation.',
-      colors: [Colors.black, Colors.blue],
-    ),
-    Product(
-      id: '2',
-      name: 'K800 Ultra headphones',
-      price: 32.00,
-      imageUrl: 'assets/images/headphone2.png',
-      description: 'Premium wireless headphones with superior sound quality.',
-      colors: [Colors.black, Colors.grey],
-    ),
-    Product(
-      id: '3',
-      name: 'P47 Wireless headphones',
-      price: 8.95,
-      imageUrl: 'assets/images/headphone3.png',
-      description: 'Comfortable wireless headphones for everyday use.',
-      colors: [Colors.black, Colors.blue, Colors.red],
-    ),
-    Product(
-      id: '4',
-      name: 'Elite Smart headphones',
-      price: 12.00,
-      imageUrl: 'assets/images/headphone4.png',
-      description:
-          'Smart headphones with touch controls and long battery life.',
-      colors: [Colors.black, Colors.white],
-    ),
-  ];
+class ExclusiveSalesScreen extends StatelessWidget {
+  const ExclusiveSalesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final List<Product> _products = [
+      Product(
+        id: '1',
+        name: 'Loop silicone strong',
+        price: 15.25,
+        oldPrice: 40.00,
+        imageUrl: 'assets/images/headphones1.png',
+        description: 'Loop silicone strong band',
+        category: 'Headphones',
+        colors: [Colors.blue, Colors.green, Colors.purple],
+      ),
+      Product(
+        id: '2',
+        name: 'K800 Ultra smart watch',
+        price: 32.00,
+        oldPrice: 35.00,
+        imageUrl: 'assets/images/headphones2.png',
+        description: 'K800 Ultra smart watch',
+        category: 'Headphones',
+        colors: [Colors.black, Colors.grey, Colors.blue],
+      ),
+      Product(
+        id: '3',
+        name: 'P47 Wireless headphones',
+        price: 35.45,
+        oldPrice: 45.00,
+        imageUrl: 'assets/images/headphones3.png',
+        description: 'P47 Wireless headphones',
+        category: 'Headphones',
+        colors: [Colors.blue, Colors.red, Colors.black],
+      ),
+      Product(
+        id: '4',
+        name: 'M6 IP67 headphones',
+        price: 12.00,
+        oldPrice: 18.00,
+        imageUrl: 'assets/images/headphones4.png',
+        description: 'M6 IP67 headphones',
+        category: 'Headphones',
+        colors: [Colors.orange, Colors.grey, Colors.black],
+      ),
+      Product(
+        id: '5',
+        name: 'D20 bluetooth smart h...',
+        price: 25.25,
+        oldPrice: 30.00,
+        imageUrl: 'assets/images/headphones5.png',
+        description: 'D20 bluetooth smart headphones',
+        category: 'Headphones',
+        colors: [Colors.blue, Colors.purple],
+      ),
+      Product(
+        id: '6',
+        name: 'D18s Smart headphones',
+        price: 17.15,
+        oldPrice: 22.00,
+        imageUrl: 'assets/images/headphones6.png',
+        description: 'D18s Smart headphones',
+        category: 'Headphones',
+        colors: [Colors.blue, Colors.black],
+      ),
+    ];
+
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -58,50 +81,37 @@ class _ExclusiveSalesScreenState extends State<ExclusiveSalesScreen> {
               floating: true,
               leading: ScaleOnTap(
                 onTap: () => Navigator.pop(context),
-                child: Container(
-                  margin: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(Icons.arrow_back, color: Colors.black),
-                ),
+                child: const Icon(Icons.arrow_back, color: Colors.black),
               ),
-              title: Text(
-                'Exclusive Sales',
-                style: Theme.of(context).textTheme.titleLarge,
+              title: const Text(
+                'Exclusive Sale',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               actions: [
-                ScaleOnTap(
-                  onTap: () {
-                    // Open filter
+                IconButton(
+                  icon: const Icon(Icons.tune, color: Colors.black),
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => const FilterBottomSheet(),
+                    );
                   },
-                  child: Container(
-                    margin: const EdgeInsets.all(8),
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.tune, color: Colors.black),
-                  ),
                 ),
-                ScaleOnTap(
-                  onTap: () {
-                    // Open search
+                IconButton(
+                  icon: const Icon(Icons.search, color: Colors.black),
+                  onPressed: () {
+                    // Navigate to search screen
                   },
-                  child: Container(
-                    margin: const EdgeInsets.all(8),
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.search, color: Colors.black),
-                  ),
                 ),
               ],
-              backgroundColor: Colors.transparent,
+              centerTitle: true,
+              backgroundColor: Colors.white,
               elevation: 0,
             ),
             SliverPadding(
@@ -109,169 +119,103 @@ class _ExclusiveSalesScreenState extends State<ExclusiveSalesScreen> {
               sliver: SliverGrid(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  childAspectRatio: 0.8,
-                  crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 0.8,
                 ),
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     final product = _products[index];
-                    final discountedPrice = product.price * 0.7; // 30% off
-                    return FadeInWidget(
-                      delay: Duration(milliseconds: 100 * index),
-                      child: ScaleOnTap(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ProductDetailScreen(product: product),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: Stack(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: ClipRRect(
-                                      borderRadius: const BorderRadius.vertical(
-                                        top: Radius.circular(16),
-                                      ),
-                                      child: Hero(
-                                        tag: 'product-${product.id}',
-                                        child: Image.asset(
-                                          product.imageUrl,
-                                          fit: BoxFit.cover,
-                                          width: double.infinity,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            ...List.generate(
-                                              product.colors.length,
-                                              (index) => Container(
-                                                width: 16,
-                                                height: 16,
-                                                margin: const EdgeInsets.only(
-                                                    right: 4),
-                                                decoration: BoxDecoration(
-                                                  color: product.colors[index],
-                                                  shape: BoxShape.circle,
-                                                ),
-                                              ),
-                                            ),
-                                            Text(
-                                              'All ${product.colors.length} Colors',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey[600],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          product.name,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              '\$${discountedPrice.toStringAsFixed(2)}',
-                                              style: TextStyle(
-                                                color: Theme.of(context)
-                                                    .primaryColor,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              '\$${product.price.toStringAsFixed(2)}',
-                                              style: TextStyle(
-                                                color: Colors.grey[600],
-                                                decoration:
-                                                    TextDecoration.lineThrough,
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Positioned(
-                                top: 8,
-                                right: 8,
-                                child: Container(
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    product.isFavorite
-                                        ? Icons.favorite
-                                        : Icons.favorite_border,
-                                    size: 20,
-                                    color: product.isFavorite
-                                        ? Colors.red
-                                        : Colors.grey,
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                top: 8,
-                                left: 8,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
+                    return GestureDetector(
+                      onTap: () {
+                        // Navigate to product details
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Stack(
+                              children: [
+                                Container(
+                                  width: double.infinity,
                                   decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.circular(4),
+                                    color: Colors.grey.shade50,
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: const Text(
-                                    '30% OFF',
-                                    style: TextStyle(
+                                  child: Image.asset(
+                                    product.imageUrl,
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                                Positioned(
+                                  right: 8,
+                                  top: 8,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.black,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.favorite_border,
                                       color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
+                                      size: 16,
                                     ),
                                   ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: product.colors.map((color) {
+                              return Container(
+                                width: 16,
+                                height: 16,
+                                margin: const EdgeInsets.only(right: 4),
+                                decoration: BoxDecoration(
+                                  color: color,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.grey.shade200,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            product.name,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Text(
+                                '\$${product.price.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF21D4B4),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                '\$${product.oldPrice?.toStringAsFixed(2)}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[400],
+                                  decoration: TextDecoration.lineThrough,
                                 ),
                               ),
                             ],
                           ),
-                        ),
+                        ],
                       ),
                     );
                   },
@@ -282,6 +226,7 @@ class _ExclusiveSalesScreenState extends State<ExclusiveSalesScreen> {
           ],
         ),
       ),
+      bottomNavigationBar: const BottomNavBar(currentIndex: 0),
     );
   }
 }

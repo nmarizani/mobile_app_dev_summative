@@ -1,36 +1,74 @@
 import 'package:flutter/material.dart';
+import '../screens/home_screen.dart';
+import '../screens/categories_screen.dart';
+import '../screens/cart_screen.dart';
+import '../screens/profile_screen.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
-  final Function(int)? onTap;
 
   const BottomNavBar({
     Key? key,
     required this.currentIndex,
-    this.onTap,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 50,
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 4,
+            offset: const Offset(0, -2),
           ),
         ],
       ),
       child: BottomNavigationBar(
         currentIndex: currentIndex,
-        onTap: onTap ?? (_) {},
+        onTap: (index) {
+          if (index == currentIndex) return;
+
+          switch (index) {
+            case 0:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+              );
+              break;
+            case 1:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const CategoriesScreen()),
+              );
+              break;
+            case 2:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const CartScreen()),
+              );
+              break;
+            case 3:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+              );
+              break;
+          }
+        },
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        selectedItemColor: Theme.of(context).primaryColor,
+        selectedItemColor: const Color(0xFF21D4B4),
         unselectedItemColor: Colors.grey,
+        selectedFontSize: 10,
+        unselectedFontSize: 10,
+        iconSize: 18,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
