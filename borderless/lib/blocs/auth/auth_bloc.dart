@@ -3,22 +3,18 @@ import 'auth_event.dart';
 import 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc() : super(AuthInitial()) {
-    on<SignInRequested>(_onSignInRequested);
-    on<SignUpRequested>(_onSignUpRequested);
-    on<SignOutRequested>(_onSignOutRequested);
-    on<CheckAuthStatus>(_onCheckAuthStatus);
+  AuthBloc() : super(const AuthInitial()) {
+    on<Login>(_onLogin);
+    on<Logout>(_onLogout);
+    on<SignUp>(_onSignUp);
+    on<CheckAuth>(_onCheckAuth);
   }
 
-  Future<void> _onSignInRequested(
-    SignInRequested event,
-    Emitter<AuthState> emit,
-  ) async {
+  void _onLogin(Login event, Emitter<AuthState> emit) async {
+    emit(const AuthLoading());
     try {
-      emit(AuthLoading());
-      // TODO: Implement actual authentication logic
-      // For now, we'll simulate a successful login
-      await Future.delayed(const Duration(seconds: 2));
+      // TODO: Implement actual login logic
+      await Future.delayed(const Duration(seconds: 1));
       emit(Authenticated(
         userId: '1',
         name: 'John Doe',
@@ -29,15 +25,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _onSignUpRequested(
-    SignUpRequested event,
-    Emitter<AuthState> emit,
-  ) async {
+  void _onLogout(Logout event, Emitter<AuthState> emit) async {
+    emit(const AuthLoading());
     try {
-      emit(AuthLoading());
-      // TODO: Implement actual registration logic
-      // For now, we'll simulate a successful registration
-      await Future.delayed(const Duration(seconds: 2));
+      // TODO: Implement actual logout logic
+      await Future.delayed(const Duration(milliseconds: 500));
+      emit(const Unauthenticated());
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
+  void _onSignUp(SignUp event, Emitter<AuthState> emit) async {
+    emit(const AuthLoading());
+    try {
+      // TODO: Implement actual signup logic
+      await Future.delayed(const Duration(seconds: 1));
       emit(Authenticated(
         userId: '1',
         name: event.name,
@@ -48,30 +51,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _onSignOutRequested(
-    SignOutRequested event,
-    Emitter<AuthState> emit,
-  ) async {
+  void _onCheckAuth(CheckAuth event, Emitter<AuthState> emit) async {
+    emit(const AuthLoading());
     try {
-      emit(AuthLoading());
-      // TODO: Implement actual sign out logic
-      await Future.delayed(const Duration(seconds: 1));
-      emit(Unauthenticated());
-    } catch (e) {
-      emit(AuthError(e.toString()));
-    }
-  }
-
-  Future<void> _onCheckAuthStatus(
-    CheckAuthStatus event,
-    Emitter<AuthState> emit,
-  ) async {
-    try {
-      emit(AuthLoading());
-      // TODO: Implement actual auth status check
-      // For now, we'll simulate checking auth status
-      await Future.delayed(const Duration(seconds: 1));
-      emit(Unauthenticated());
+      // TODO: Check if user is logged in
+      await Future.delayed(const Duration(milliseconds: 500));
+      emit(const Unauthenticated());
     } catch (e) {
       emit(AuthError(e.toString()));
     }

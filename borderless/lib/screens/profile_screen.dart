@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'shipping_address_screen.dart';
 import 'payment_method_screen.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -120,7 +121,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _buildMenuItem(
                     icon: Icons.history_outlined,
                     title: 'Order History',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(context, '/order-history');
+                    },
                   ),
                   const SizedBox(height: 24),
                   const Text(
@@ -135,17 +138,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _buildMenuItem(
                     icon: Icons.privacy_tip_outlined,
                     title: 'Privacy Policy',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(context, '/privacy-policy');
+                    },
                   ),
                   _buildMenuItem(
                     icon: Icons.description_outlined,
                     title: 'Terms & Conditions',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(context, '/terms-conditions');
+                    },
                   ),
                   _buildMenuItem(
                     icon: Icons.help_outline,
                     title: 'FAQs',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(context, '/faqs');
+                    },
                   ),
                   const SizedBox(height: 24),
                   const Text(
@@ -160,7 +169,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _buildMenuItem(
                     icon: Icons.lock_outline,
                     title: 'Change Password',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(context, '/change-password');
+                    },
                   ),
                   _buildToggleMenuItem(
                     icon: Icons.dark_mode_outlined,

@@ -3,6 +3,7 @@ import '../screens/home_screen.dart';
 import '../screens/categories_screen.dart';
 import '../screens/cart_screen.dart';
 import '../screens/profile_screen.dart';
+import '../screens/wishlist_screen.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -48,10 +49,16 @@ class BottomNavBar extends StatelessWidget {
             case 2:
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => const CartScreen()),
+                MaterialPageRoute(builder: (context) => const WishlistScreen()),
               );
               break;
             case 3:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const CartScreen()),
+              );
+              break;
+            case 4:
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => const ProfileScreen()),
@@ -79,6 +86,11 @@ class BottomNavBar extends StatelessWidget {
             icon: Icon(Icons.category_outlined),
             activeIcon: Icon(Icons.category),
             label: 'Categories',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite_border),
+            activeIcon: Icon(Icons.favorite),
+            label: 'Wishlist',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart_outlined),

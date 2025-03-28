@@ -14,33 +14,50 @@ class CategoriesScreen extends StatefulWidget {
 class _CategoriesScreenState extends State<CategoriesScreen> {
   final List<Category> _categories = [
     Category(
-        id: '1',
-        name: 'Electronics',
-        iconAsset: 'assets/icons/electronics.png'),
-    Category(id: '2', name: 'Fashion', iconAsset: 'assets/icons/fashion.png'),
+      id: '1',
+      name: 'Electronics',
+      imageUrl: 'assets/icons/electronics.png',
+    ),
     Category(
-        id: '3', name: 'Furniture', iconAsset: 'assets/icons/furniture.png'),
+      id: '2',
+      name: 'Fashion',
+      imageUrl: 'assets/icons/fashion.png',
+    ),
     Category(
-        id: '4', name: 'Industrial', iconAsset: 'assets/icons/industrial.png'),
+      id: '3',
+      name: 'Furniture',
+      imageUrl: 'assets/icons/furniture.png',
+    ),
     Category(
-        id: '5', name: 'Home Decor', iconAsset: 'assets/icons/home_decor.png'),
+      id: '4',
+      name: 'Industrial',
+      imageUrl: 'assets/icons/industrial.png',
+    ),
     Category(
-        id: '6',
-        name: 'Electronics',
-        iconAsset: 'assets/icons/electronics_alt.png'),
-    Category(id: '7', name: 'Health', iconAsset: 'assets/icons/health.png'),
+      id: '5',
+      name: 'Home Decor',
+      imageUrl: 'assets/icons/home_decor.png',
+    ),
     Category(
-        id: '8',
-        name: 'Construction & Real Estate',
-        iconAsset: 'assets/icons/construction.png'),
+      id: '6',
+      name: 'Electronics',
+      imageUrl: 'assets/icons/electronics_tv.png',
+    ),
     Category(
-        id: '9',
-        name: 'Fabrication Service',
-        iconAsset: 'assets/icons/fabrication.png'),
+      id: '7',
+      name: 'Construction & Real Estate',
+      imageUrl: 'assets/icons/construction.png',
+    ),
     Category(
-        id: '10',
-        name: 'Electrical Equipment',
-        iconAsset: 'assets/icons/electrical.png'),
+      id: '8',
+      name: 'Fabrication Service',
+      imageUrl: 'assets/icons/fabrication.png',
+    ),
+    Category(
+      id: '9',
+      name: 'Electrical Equipment',
+      imageUrl: 'assets/icons/electrical.png',
+    ),
   ];
 
   @override
@@ -58,19 +75,31 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search, color: Colors.black),
+            onPressed: () {
+              // TODO: Navigate to search screen
+            },
+          ),
+        ],
       ),
       body: GridView.builder(
         padding: const EdgeInsets.all(16),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
+          crossAxisCount: 3,
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
-          childAspectRatio: 1,
+          childAspectRatio: 0.85,
         ),
         itemCount: _categories.length,
         itemBuilder: (context, index) {
           final category = _categories[index];
-          return ScaleOnTap(
+          return GestureDetector(
             onTap: () {
               Navigator.push(
                 context,
@@ -81,23 +110,45 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             },
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(8),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.category_outlined,
-                    size: 32,
-                    color: Colors.grey.shade400,
+                  Container(
+                    width: 56,
+                    height: 56,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Image.asset(
+                      category.imageUrl,
+                      width: 32,
+                      height: 32,
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    category.name,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(
+                      category.name,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],

@@ -12,6 +12,10 @@ class Product extends Equatable {
   final List<Color> colors;
   final bool isAvailable;
   final bool isFavorite;
+  final double? discountPercentage;
+  final List<String>? sizes;
+  final double? rating;
+  final int? reviews;
 
   const Product({
     required this.id,
@@ -24,6 +28,10 @@ class Product extends Equatable {
     this.colors = const [],
     this.isAvailable = true,
     this.isFavorite = false,
+    this.discountPercentage,
+    this.sizes,
+    this.rating,
+    this.reviews,
   });
 
   @override
@@ -38,6 +46,10 @@ class Product extends Equatable {
         colors,
         isAvailable,
         isFavorite,
+        discountPercentage,
+        sizes,
+        rating,
+        reviews,
       ];
 
   Product copyWith({
@@ -51,6 +63,10 @@ class Product extends Equatable {
     List<Color>? colors,
     bool? isAvailable,
     bool? isFavorite,
+    double? discountPercentage,
+    List<String>? sizes,
+    double? rating,
+    int? reviews,
   }) {
     return Product(
       id: id ?? this.id,
@@ -63,6 +79,51 @@ class Product extends Equatable {
       colors: colors ?? this.colors,
       isAvailable: isAvailable ?? this.isAvailable,
       isFavorite: isFavorite ?? this.isFavorite,
+      discountPercentage: discountPercentage ?? this.discountPercentage,
+      sizes: sizes ?? this.sizes,
+      rating: rating ?? this.rating,
+      reviews: reviews ?? this.reviews,
+    );
+  }
+
+  double get discountedPrice {
+    if (discountPercentage == null) return price;
+    return price * (1 - discountPercentage! / 100);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'price': price,
+      'discountPercentage': discountPercentage,
+      'imageUrl': imageUrl,
+      'colors': colors.map((color) => color.value).toList(),
+      'sizes': sizes,
+      'rating': rating,
+      'reviews': reviews,
+    };
+  }
+
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      id: json['id'],
+      name: json['name'],
+      description: json['description'],
+      price: json['price'].toDouble(),
+      oldPrice: json['oldPrice']?.toDouble(),
+      imageUrl: json['imageUrl'],
+      category: json['category'],
+      colors: (json['colors'] as List)
+          .map((colorValue) => Color(colorValue))
+          .toList(),
+      isAvailable: json['isAvailable'] ?? true,
+      isFavorite: json['isFavorite'] ?? false,
+      discountPercentage: json['discountPercentage']?.toDouble(),
+      sizes: json['sizes']?.cast<String>(),
+      rating: json['rating'].toDouble(),
+      reviews: json['reviews'],
     );
   }
 }

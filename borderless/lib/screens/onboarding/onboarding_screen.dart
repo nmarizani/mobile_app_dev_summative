@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../widgets/onboarding_background.dart';
+import '../auth/login_screen.dart';
+import '../auth/sign_up_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -12,126 +13,188 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
+  final List<OnboardingData> _pages = [
+    OnboardingData(
+      image: 'assets/images/onboarding1.png',
+      title: 'Explore a wide range of products',
+      description:
+          'Explore a wide range of products at your fingertips. Borderless offers an extensive collection to suit your needs.',
+    ),
+    OnboardingData(
+      image: 'assets/images/onboarding2.png',
+      title: 'Unlock exclusive offers and discounts',
+      description:
+          'Get access to limited-time deals and special promotions available only to our valued customers.',
+    ),
+    OnboardingData(
+      image: 'assets/images/onboarding3.png',
+      title: 'Safe and secure payments',
+      description:
+          'Borderless employs industry-leading encryption and trusted payment gateways to safeguard your financial information.',
+    ),
+  ];
+
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
   }
 
-  void _navigateToHome() {
-    Navigator.pushReplacementNamed(context, '/home');
-  }
-
-  void _navigateToLogin() {
-    Navigator.pushReplacementNamed(context, '/login');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: OnboardingBackground(
-        currentPage: _currentPage,
+      backgroundColor: Colors.white,
+      body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 32),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (_currentPage > 0)
+                    IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      onPressed: () {
+                        _pageController.previousPage(
+                          duration: Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      },
+                    ),
+                  if (_currentPage < 2)
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SignUpScreen()),
+                        );
+                      },
+                      child: Text(
+                        'Skip for now',
+                        style: TextStyle(
+                          color: Color(0xFF21D4B4),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
             Expanded(
-              child: PageView(
+              child: PageView.builder(
                 controller: _pageController,
                 onPageChanged: (index) {
                   setState(() {
                     _currentPage = index;
                   });
                 },
-                children: [
-                  _OnboardingPage(
-                    image: 'assets/images/onboarding1.png',
-                    title: 'Welcome to Borderless',
-                    description: 'Your one-stop shop for everything you need',
-                  ),
-                  _OnboardingPage(
-                    image: 'assets/images/onboarding2.png',
-                    title: 'Easy Shopping',
-                    description:
-                        'Browse through our wide selection of products',
-                  ),
-                  _OnboardingPage(
-                    image: 'assets/images/onboarding3.png',
-                    title: 'Fast Delivery',
-                    description:
-                        'Get your items delivered right to your doorstep',
-                  ),
-                ],
+                itemCount: _pages.length,
+                itemBuilder: (context, index) {
+                  return _OnboardingPage(data: _pages[index]);
+                },
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
+              padding: const EdgeInsets.all(24.0),
               child: Column(
                 children: [
-                  if (_currentPage < 2) ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                          onPressed: _navigateToHome,
-                          child: Text(
-                            'Skip for now',
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 16,
-                            ),
-                          ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      _pages.length,
+                      (index) => Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _currentPage == index
+                              ? Color(0xFF21D4B4)
+                              : Colors.grey.shade200,
                         ),
-                        TextButton(
-                          onPressed: () {
-                            _pageController.nextPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          },
-                          child: const Text(
-                            'Next',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ] else ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                          onPressed: _navigateToLogin,
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                          ),
-                          child: const Text(
-                            'Login',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF34C759),
-                            ),
+                  ),
+                  SizedBox(height: 24),
+                  if (_currentPage < 2)
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _pageController.nextPage(
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
+                        child: Text(
+                          'Next',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    Row(
+                      children: [
                         Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 16),
-                            child: ElevatedButton(
-                              onPressed: _navigateToHome,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
-                                foregroundColor: Colors.white,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
+                          child: SizedBox(
+                            height: 56,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const LoginScreen()),
+                                );
+                              },
+                              style: TextButton.styleFrom(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              child: const Text(
+                              child: Text(
+                                'Login',
+                                style: TextStyle(
+                                  color: Color(0xFF21D4B4),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: SizedBox(
+                            height: 56,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const SignUpScreen()),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.black,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: Text(
                                 'Get Started',
                                 style: TextStyle(
                                   fontSize: 16,
@@ -143,7 +206,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                       ],
                     ),
-                  ],
                 ],
               ),
             ),
@@ -154,55 +216,57 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 }
 
-class _OnboardingPage extends StatelessWidget {
+class OnboardingData {
   final String image;
   final String title;
   final String description;
 
-  const _OnboardingPage({
+  OnboardingData({
     required this.image,
     required this.title,
     required this.description,
   });
+}
+
+class _OnboardingPage extends StatelessWidget {
+  final OnboardingData data;
+
+  const _OnboardingPage({required this.data});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              image: DecorationImage(
-                image: AssetImage(image),
-                fit: BoxFit.cover,
-              ),
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            data.image,
+            height: 240,
+            fit: BoxFit.contain,
+          ),
+          SizedBox(height: 40),
+          Text(
+            data.title,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
             ),
-          ),
-        ),
-        const SizedBox(height: 32),
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Text(
-            description,
             textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 16),
+          Text(
+            data.description,
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey[600],
+              height: 1.5,
             ),
+            textAlign: TextAlign.center,
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

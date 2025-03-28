@@ -1,128 +1,141 @@
 import 'package:flutter/material.dart';
 import '../models/category.dart';
-import '../widgets/animated_widgets.dart';
-import '../widgets/bottom_nav_bar.dart';
+import 'product_listing_screen.dart';
 
 class SubcategoriesScreen extends StatelessWidget {
   final Category category;
 
-  const SubcategoriesScreen({
-    Key? key,
+  SubcategoriesScreen({
+    super.key,
     required this.category,
-  }) : super(key: key);
+  });
+
+  // Sample subcategories for Electronics
+  final List<Map<String, String>> _electronicsSubcategories = [
+    {
+      'id': 'laptops',
+      'name': 'Laptops',
+      'image': 'assets/images/subcategories/laptops.jpg',
+    },
+    {
+      'id': 'mobile_phones',
+      'name': 'Mobile phones',
+      'image': 'assets/images/subcategories/mobile_phones.jpg',
+    },
+    {
+      'id': 'headphones',
+      'name': 'Headphones',
+      'image': 'assets/images/subcategories/headphones.jpg',
+    },
+    {
+      'id': 'smart_watches',
+      'name': 'Smart Watches',
+      'image': 'assets/images/subcategories/smart_watches.jpg',
+    },
+    {
+      'id': 'mobile_cases',
+      'name': 'Mobile Cases',
+      'image': 'assets/images/subcategories/mobile_cases.jpg',
+    },
+    {
+      'id': 'monitors',
+      'name': 'Monitors',
+      'image': 'assets/images/subcategories/monitors.jpg',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final List<Category> _subcategories = [
-      Category(
-        id: '1',
-        name: 'Laptops',
-        iconAsset: 'assets/images/laptop.png',
-      ),
-      Category(
-        id: '2',
-        name: 'Mobile phones',
-        iconAsset: 'assets/images/mobile.png',
-      ),
-      Category(
-        id: '3',
-        name: 'Headphones',
-        iconAsset: 'assets/images/headphones.png',
-      ),
-      Category(
-        id: '4',
-        name: 'Smart Watches',
-        iconAsset: 'assets/images/smartwatch.png',
-      ),
-      Category(
-        id: '5',
-        name: 'Mobile Cases',
-        iconAsset: 'assets/images/case.png',
-      ),
-      Category(
-        id: '6',
-        name: 'Monitors',
-        iconAsset: 'assets/images/monitor.png',
-      ),
-    ];
-
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              floating: true,
-              leading: ScaleOnTap(
-                onTap: () => Navigator.pop(context),
-                child: const Icon(Icons.arrow_back, color: Colors.black),
-              ),
-              title: Text(
-                category.name,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              centerTitle: true,
-              backgroundColor: Colors.white,
-              elevation: 0,
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.all(16),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 1,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final subcategory = _subcategories[index];
-                    return GestureDetector(
-                      onTap: () {
-                        // Navigate to products
-                      },
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: Colors.grey.shade200,
-                                ),
-                              ),
-                              child: Image.asset(
-                                subcategory.iconAsset!,
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            subcategory.name,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  childCount: _subcategories.length,
-                ),
-              ),
-            ),
-          ],
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Text(
+          category.name,
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search, color: Colors.black),
+            onPressed: () {
+              // TODO: Navigate to search screen
+            },
+          ),
+        ],
       ),
-      bottomNavigationBar: const BottomNavBar(currentIndex: 1),
+      body: GridView.builder(
+        padding: const EdgeInsets.all(16),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 16,
+          childAspectRatio: 1,
+        ),
+        itemCount: _electronicsSubcategories.length,
+        itemBuilder: (context, index) {
+          final subcategory = _electronicsSubcategories[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProductListingScreen(
+                    categoryId: category.id,
+                    subcategoryId: subcategory['id']!,
+                    title: subcategory['name']!,
+                  ),
+                ),
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                image: DecorationImage(
+                  image: AssetImage(subcategory['image']!),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.7),
+                    ],
+                  ),
+                ),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      subcategory['name']!,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

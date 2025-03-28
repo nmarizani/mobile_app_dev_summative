@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class ShippingAddressScreen extends StatefulWidget {
   const ShippingAddressScreen({super.key});
@@ -9,8 +10,35 @@ class ShippingAddressScreen extends StatefulWidget {
 
 class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
   final _formKey = GlobalKey<FormState>();
-  String selectedProvince = '';
-  String selectedCity = '';
+  final _fullNameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _streetAddressController = TextEditingController();
+  final _postalCodeController = TextEditingController();
+  String? _selectedProvince;
+  String? _selectedCity;
+
+  final Map<String, List<String>> _citiesByProvince = {
+    'Punjab': ['Lahore', 'Faisalabad', 'Rawalpindi', 'Multan'],
+    'Sindh': ['Karachi', 'Hyderabad', 'Sukkur'],
+    'KPK': ['Peshawar', 'Abbottabad', 'Mardan'],
+    'Balochistan': ['Quetta', 'Gwadar', 'Turbat'],
+  };
+
+  @override
+  void dispose() {
+    _fullNameController.dispose();
+    _phoneController.dispose();
+    _streetAddressController.dispose();
+    _postalCodeController.dispose();
+    super.dispose();
+  }
+
+  void _saveAddress() {
+    if (_formKey.currentState?.validate() ?? false) {
+      // Save address logic here
+      Navigator.pop(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,232 +60,197 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildInputLabel('Full Name'),
-              _buildTextField(
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            TextFormField(
+              controller: _fullNameController,
+              decoration: const InputDecoration(
+                labelText: 'Full Name',
                 hintText: 'Enter full name',
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your full name';
-                  }
-                  return null;
-                },
               ),
-              const SizedBox(height: 16),
-              _buildInputLabel('Phone Number'),
-              Row(
-                children: [
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          'assets/images/pk_flag.png',
-                          width: 24,
-                          height: 16,
-                        ),
-                        const SizedBox(width: 4),
-                        const Text('+92'),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _buildTextField(
-                      hintText: 'Enter phone number',
-                      keyboardType: TextInputType.phone,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your phone number';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildInputLabel('Select Province'),
-              _buildDropdown(
-                value: selectedProvince,
-                hint: 'Select Province',
-                items: ['Punjab', 'Sindh', 'KPK', 'Balochistan'],
-                onChanged: (value) {
-                  setState(() {
-                    selectedProvince = value ?? '';
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-              _buildInputLabel('Select City'),
-              _buildDropdown(
-                value: selectedCity,
-                hint: 'Select City',
-                items: ['Lahore', 'Karachi', 'Islamabad', 'Peshawar'],
-                onChanged: (value) {
-                  setState(() {
-                    selectedCity = value ?? '';
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-              _buildInputLabel('Street Address'),
-              _buildTextField(
-                hintText: 'Enter street address',
-                maxLines: 2,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your street address';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              _buildInputLabel('Postal Code'),
-              _buildTextField(
-                hintText: 'Enter postal code',
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your postal code';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // Save address
-                      Navigator.pop(context);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text(
-                    'Save',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+              validator: (value) {
+                if (value?.isEmpty ?? true) {
+                  return 'Please enter your full name';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _phoneController,
+              decoration: InputDecoration(
+                labelText: 'Phone Number',
+                hintText: 'Enter phone number',
+                prefixIcon: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(
+                        'assets/icons/pk_flag.png',
+                        width: 24,
+                        height: 16,
+                      ),
+                      const SizedBox(width: 4),
+                      const Text('+92'),
+                      const SizedBox(width: 4),
+                      Container(
+                        width: 1,
+                        height: 24,
+                        color: Colors.grey[300],
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInputLabel(String label) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
+              keyboardType: TextInputType.phone,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(10),
+              ],
+              validator: (value) {
+                if (value?.isEmpty ?? true) {
+                  return 'Please enter your phone number';
+                }
+                if (value!.length < 10) {
+                  return 'Please enter a valid phone number';
+                }
+                return null;
+              },
             ),
-          ),
-          const Text(
-            ' *',
-            style: TextStyle(
-              color: Colors.red,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: _selectedProvince,
+              decoration: const InputDecoration(
+                labelText: 'Province',
+                hintText: 'Select Province',
+              ),
+              items: _citiesByProvince.keys.map((String province) {
+                return DropdownMenuItem<String>(
+                  value: province,
+                  child: Text(province),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedProvince = newValue;
+                  _selectedCity = null;
+                });
+              },
+              validator: (value) {
+                if (value == null) {
+                  return 'Please select a province';
+                }
+                return null;
+              },
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required String hintText,
-    String? Function(String?)? validator,
-    TextInputType? keyboardType,
-    int maxLines = 1,
-  }) {
-    return TextFormField(
-      decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: TextStyle(
-          color: Colors.grey.shade400,
-          fontSize: 14,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFF21D4B4)),
-        ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      ),
-      validator: validator,
-      keyboardType: keyboardType,
-      maxLines: maxLines,
-    );
-  }
-
-  Widget _buildDropdown({
-    required String value,
-    required String hint,
-    required List<String> items,
-    required void Function(String?) onChanged,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButtonFormField<String>(
-          value: value.isEmpty ? null : value,
-          hint: Text(
-            hint,
-            style: TextStyle(
-              color: Colors.grey.shade400,
-              fontSize: 14,
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: _selectedCity,
+              decoration: const InputDecoration(
+                labelText: 'City',
+                hintText: 'Select City',
+              ),
+              items: _selectedProvince == null
+                  ? []
+                  : _citiesByProvince[_selectedProvince]!.map((String city) {
+                      return DropdownMenuItem<String>(
+                        value: city,
+                        child: Text(city),
+                      );
+                    }).toList(),
+              onChanged: _selectedProvince == null
+                  ? null
+                  : (String? newValue) {
+                      setState(() {
+                        _selectedCity = newValue;
+                      });
+                    },
+              validator: (value) {
+                if (value == null) {
+                  return 'Please select a city';
+                }
+                return null;
+              },
             ),
-          ),
-          items: items.map((String item) {
-            return DropdownMenuItem(
-              value: item,
-              child: Text(item),
-            );
-          }).toList(),
-          onChanged: onChanged,
-          decoration: const InputDecoration(
-            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            border: InputBorder.none,
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _streetAddressController,
+              decoration: const InputDecoration(
+                labelText: 'Street Address',
+                hintText: 'Enter street address',
+              ),
+              maxLines: 2,
+              validator: (value) {
+                if (value?.isEmpty ?? true) {
+                  return 'Please enter your street address';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _postalCodeController,
+              decoration: const InputDecoration(
+                labelText: 'Postal Code',
+                hintText: 'Enter postal code',
+              ),
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(5),
+              ],
+              validator: (value) {
+                if (value?.isEmpty ?? true) {
+                  return 'Please enter your postal code';
+                }
+                if (value!.length != 5) {
+                  return 'Postal code must be 5 digits';
+                }
+                return null;
+              },
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          bottom: MediaQuery.of(context).padding.bottom + 16,
+          top: 16,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: ElevatedButton(
+            onPressed: _saveAddress,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text(
+              'Save',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ),
       ),

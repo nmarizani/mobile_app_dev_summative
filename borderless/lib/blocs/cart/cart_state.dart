@@ -1,45 +1,39 @@
 import 'package:equatable/equatable.dart';
-import '../../models/product.dart';
+import '../../models/cart_item.dart';
 
-abstract class CartState extends Equatable {
-  const CartState();
+class CartState extends Equatable {
+  final List<CartItem> items;
+  final List<CartItem> savedItems;
 
-  @override
-  List<Object> get props => [];
-}
-
-class CartInitial extends CartState {}
-
-class CartLoading extends CartState {}
-
-class CartLoaded extends CartState {
-  final Map<Product, int> items;
-  final double total;
-
-  const CartLoaded({
-    this.items = const {},
-    this.total = 0.0,
+  const CartState({
+    this.items = const [],
+    this.savedItems = const [],
   });
 
-  @override
-  List<Object> get props => [items, total];
+  double get subtotal =>
+      items.fold(0, (sum, item) => sum + (item.product.price * item.quantity));
 
-  CartLoaded copyWith({
-    Map<Product, int>? items,
-    double? total,
+  double get shippingCost {
+    if (subtotal >= 100) return 0; // Free shipping for orders over $100
+    return 10; // Standard shipping cost
+  }
+
+  double get total => subtotal + shippingCost;
+  double get totalAmount => total; // Alias for total to maintain compatibility
+
+  int get itemCount => items.length;
+  int get savedItemCount => savedItems.length;
+
+  CartState copyWith({
+    List<CartItem>? items,
+    List<CartItem>? savedItems,
   }) {
-    return CartLoaded(
+    return CartState(
       items: items ?? this.items,
-      total: total ?? this.total,
+      savedItems: savedItems ?? this.savedItems,
     );
   }
-}
-
-class CartError extends CartState {
-  final String message;
-
-  const CartError(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [items, savedItems];
 }
