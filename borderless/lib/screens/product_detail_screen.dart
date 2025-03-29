@@ -1,335 +1,209 @@
 import 'package:flutter/material.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:pay/pay.dart';
-import '../models/product.dart';
+import 'my_cart_screen.dart'; // Import My Cart screen
+import 'wishlist_screen.dart'; // Import Wishlist screen
 
 class ProductDetailScreen extends StatefulWidget {
-  final Product product;
-
-  const ProductDetailScreen({
-    super.key,
-    required this.product,
-  });
+  const ProductDetailScreen({super.key});
 
   @override
-  State<ProductDetailScreen> createState() => _ProductDetailScreenState();
+  _ProductDetailScreenState createState() => _ProductDetailScreenState();
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  final PageController _pageController = PageController();
-  int _selectedColorIndex = 0;
-  int _quantity = 1;
-  bool _isExpanded = false;
+  bool isLiked = false;
+  int cartCount = 0;
+  bool showSuccessMessage = false;
 
-  final List<String> _productImages = [
-    'assets/images/watch1.png',
-    'assets/images/watch1_2.png',
-    'assets/images/watch1_3.png',
-  ];
+  Set<String> wishlist = {}; // Wishlist storage
+  Map<String, int> cartItems = {}; // Cart storage
 
-  final List<Color> _colors = [
-    Colors.black,
-    Colors.blue,
-    Colors.red,
-    Colors.grey,
-    Colors.purple,
-  ];
+  void toggleWishlist() {
+    setState(() {
+      if (isLiked) {
+        wishlist.remove('Loop Silicone Smartwatch'); // Remove from wishlist
+      } else {
+        wishlist.add('Loop Silicone Smartwatch'); // Add to wishlist
+      }
+      isLiked = !isLiked;
+    });
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
+    // Navigate to wishlist if item is added
+    if (isLiked) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => WishlistScreen(wishlistItems: wishlist),
+        ),
+      );
+    }
   }
 
-  void _updateQuantity(int delta) {
+  void addToCart() {
     setState(() {
-      final newQuantity = _quantity + delta;
-      if (newQuantity > 0) {
-        _quantity = newQuantity;
-      }
+      cartItems['Loop Silicone Smartwatch'] =
+          (cartItems['Loop Silicone Smartwatch'] ?? 0) + 1;
+      cartCount++;
+      showSuccessMessage = true;
     });
+
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() {
+        showSuccessMessage = false;
+      });
+    });
+  }
+
+  void buyNow() {
+    addToCart();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MyCartPage(cartItems: cartItems),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                backgroundColor: Colors.white,
-                elevation: 0,
-                pinned: true,
-                expandedHeight: 400,
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                actions: [
-                  IconButton(
-                    icon:
-                        const Icon(Icons.favorite_border, color: Colors.black),
-                    onPressed: () {
-                      // Add to wishlist
-                    },
-                  ),
-                ],
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Stack(
-                    children: [
-                      PageView(
-                        controller: _pageController,
-                        children: [widget.product.imageUrl].map((image) {
-                          return Image.asset(
-                            image,
-                            fit: BoxFit.cover,
-                          );
-                        }).toList(),
-                      ),
-                      Positioned(
-                        bottom: 16,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: SmoothPageIndicator(
-                            controller: _pageController,
-                            count: 1,
-                            effect: WormEffect(
-                              dotHeight: 8,
-                              dotWidth: 8,
-                              spacing: 8,
-                              dotColor: Colors.grey[300]!,
-                              activeDotColor: const Color(0xFF21D4B4),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            widget.product.name,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Text(
-                            '\$${widget.product.price.toStringAsFixed(2)}',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        widget.product.category,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      if (widget.product.colors != null) ...[
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Colors',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: List.generate(
-                            widget.product.colors!.length,
-                            (index) => GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _selectedColorIndex = index;
-                                });
-                              },
-                              child: Container(
-                                width: 32,
-                                height: 32,
-                                margin: const EdgeInsets.only(right: 8),
-                                decoration: BoxDecoration(
-                                  color: widget.product.colors![index],
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: _selectedColorIndex == index
-                                        ? const Color(0xFF21D4B4)
-                                        : Colors.transparent,
-                                    width: 2,
-                                  ),
-                                ),
-                                child: _selectedColorIndex == index
-                                    ? const Icon(
-                                        Icons.check,
-                                        color: Colors.white,
-                                        size: 16,
-                                      )
-                                    : null,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Quantity',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.remove),
-                            onPressed: () => _updateQuantity(-1),
-                          ),
-                          Text(
-                            '$_quantity',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.add),
-                            onPressed: () => _updateQuantity(1),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Description',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        widget.product.description,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                          height: 1.5,
-                        ),
-                        maxLines: _isExpanded ? null : 3,
-                        overflow: _isExpanded ? null : TextOverflow.ellipsis,
-                      ),
-                      if (!_isExpanded)
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _isExpanded = true;
-                            });
-                          },
-                          child: const Text('Read More'),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 16,
-                bottom: MediaQuery.of(context).padding.bottom + 16,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Buy now
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Buy Now',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Add to cart
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Product added to cart'),
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF21D4B4),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Add to Cart',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              isLiked ? Icons.favorite : Icons.favorite_border,
+              color: isLiked ? Colors.red : Colors.black,
             ),
+            onPressed: toggleWishlist, // ✅ Call toggleWishlist function
           ),
         ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Image.asset('assets/loop_silicone.png', height: 180),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Loop Silicone Strong \nMagnetic Watch',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: const [
+                    Text('\$15.25',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue)),
+                    Text(
+                      '\$20.00',
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                          decoration: TextDecoration.lineThrough),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 5),
+            Row(
+              children: const [
+                Icon(Icons.star, color: Colors.orange, size: 18),
+                Icon(Icons.star, color: Colors.orange, size: 18),
+                Icon(Icons.star, color: Colors.orange, size: 18),
+                Icon(Icons.star, color: Colors.orange, size: 18),
+                Icon(Icons.star_half, color: Colors.orange, size: 18),
+                SizedBox(width: 5),
+                Text('4.5 (420 Reviews)', style: TextStyle(fontSize: 12)),
+              ],
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Constructed with high-quality silicone material, the Loop Silicone Strong Magnetic Watch ensures a comfortable and secure fit on your wrist. The soft and flexible silicone is gentle on the skin, making it ideal for extended wear. Its lightweight design allows for a seamless blend of comfort and durability.',
+              style: TextStyle(fontSize: 14, color: Colors.black87),
+            ),
+            const SizedBox(height: 10),
+            const Text('Color',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 5),
+            Row(
+              children: List.generate(
+                  3, (index) => _buildColorDot(Colors.primaries[index])),
+            ),
+            const SizedBox(height: 15),
+            if (showSuccessMessage)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: const Text(
+                  'The product has been added to your cart',
+                  style: TextStyle(
+                      color: Colors.green, fontWeight: FontWeight.bold),
+                ),
+              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: buyNow,
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                  child: const Text('Buy Now',
+                      style: TextStyle(color: Colors.white)),
+                ),
+                ElevatedButton(
+                  onPressed: addToCart,
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey.shade200),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.add_shopping_cart, color: Colors.black),
+                      SizedBox(width: 5),
+                      Text('Add To Cart', style: TextStyle(color: Colors.black)),
+                    ],
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MyCartPage(cartItems: cartItems),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue),
+                  child: const Text('Go to Cart',
+                      style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildColorDot(Color color) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      width: 20,
+      height: 20,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.black, width: 0.5),
       ),
     );
   }

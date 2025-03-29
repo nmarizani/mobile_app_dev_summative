@@ -42,6 +42,16 @@ void main() {
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
+void main() {
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => WishlistBloc()),
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
 
   runApp(const MyApp());
 }
@@ -57,7 +67,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => CartBloc()),
         BlocProvider(create: (context) => ProductsBloc()),
         BlocProvider(create: (context) => ProductListingBloc()),
-        BlocProvider(create: (context) => WishlistBloc()..add(LoadWishlist())),
+        BlocProvider(create: (context) => WishlistBloc()),
       ],
       child: MaterialApp(
         title: 'Borderless',

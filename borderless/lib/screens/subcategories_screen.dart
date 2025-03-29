@@ -82,16 +82,16 @@ class SubcategoriesScreen extends StatelessWidget {
         ),
         itemCount: _electronicsSubcategories.length,
         itemBuilder: (context, index) {
-          final subcategory = _electronicsSubcategories[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProductListingScreen(
-                    categoryId: category.id,
-                    subcategoryId: subcategory['id']!,
-                    title: subcategory['name']!,
+  final subcategory = _electronicsSubcategories[index];
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProductListingScreen(
+            categoryId: category.id,
+            subcategoryId: subcategory['id']!,
+            title: subcategory['name']!,
                   ),
                 ),
               );

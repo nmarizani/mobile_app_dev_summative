@@ -2,347 +2,183 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../widgets/animated_widgets.dart';
 import 'voucher_screen.dart';
+import 'shipping_address_screen.dart';
 
-class MyCartScreen extends StatefulWidget {
-  const MyCartScreen({Key? key}) : super(key: key);
+class MyCartPage extends StatefulWidget {
+  final Map<String, int> cartItems;
+
+  MyCartPage({required this.cartItems});
 
   @override
-  State<MyCartScreen> createState() => _MyCartScreenState();
+  _MyCartPageState createState() => _MyCartPageState();
 }
 
-class _MyCartScreenState extends State<MyCartScreen> {
-  final List<CartItem> _cartItems = [];
+class _MyCartPageState extends State<MyCartPage> {
+  TextEditingController voucherController = TextEditingController();
+  double discount = 0.0;
+  String? errorMessage;
+  double shippingCost = 5.00;
 
-  double get _subtotal => _cartItems.fold(
-      0, (sum, item) => sum + (item.product.price * item.quantity));
+  double get subtotal => widget.cartItems.entries
+      .fold(0, (sum, item) => sum + (item.value * 15.25));
 
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            'assets/images/empty_cart.png',
-            width: 200,
-            height: 200,
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'Your cart is empty',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Looks like you have not added anything in your\ncart. Go ahead and explore top categories.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.grey[600],
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 32),
-          ScaleOnTap(
-            onTap: () {
-              // Navigate to categories
-              Navigator.pop(context);
-            },
-            child: Container(
-              width: double.infinity,
-              height: 50,
-              margin: const EdgeInsets.symmetric(horizontal: 32),
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Center(
-                child: Text(
-                  'Explore Categories',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+  double get total => (subtotal - discount) + shippingCost;
+
+  void applyVoucher() {
+    String code = voucherController.text.trim().toUpperCase();
+    double? discountValue = VoucherCodes.getDiscount(code);
+
+    setState(() {
+      if (discountValue != null) {
+        discount = discountValue < 1 ? subtotal * discountValue : discountValue;
+        errorMessage = null;
+      } else {
+        errorMessage = "Invalid voucher code!";
+        discount = 0.0;
+      }
+    });
+  }
+
+  void updateQuantity(String product, int change) {
+    setState(() {
+      widget.cartItems[product] = (widget.cartItems[product]! + change).clamp(0, 10);
+      if (widget.cartItems[product] == 0) {
+        widget.cartItems.remove(product);
+      }
+    });
+  }
+
+  void removeItem(String product) {
+    setState(() {
+      widget.cartItems.remove(product);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: ScaleOnTap(
-          onTap: () => Navigator.pop(context),
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.arrow_back, color: Colors.black),
-          ),
-        ),
-        title: Text(
-          'My Cart',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-      ),
-      body: _cartItems.isEmpty
-          ? _buildEmptyState()
-          : Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _cartItems.length,
-                    itemBuilder: (context, index) {
-                      final item = _cartItems[index];
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 5),
+      appBar: AppBar(title: Text('My Cart')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: widget.cartItems.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.shopping_cart, size: 80, color: Colors.grey),
+                          SizedBox(height: 10),
+                          Text("Your cart is empty!", style: TextStyle(fontSize: 18)),
+                          SizedBox(height: 10),
+                           ElevatedButton(
+                            onPressed: () {},
+                            child: Text("Explore Categories"),
+                          ),
+ 
+
+                        ],
+                      ),
+                    )
+                  : ListView(
+                      children: widget.cartItems.keys.map((product) {
+                        return Card(
+                          child: ListTile(
+                            leading: Image.asset(
+                                'assets/${product.toLowerCase().replaceAll(" ", "_")}.png',
+                                width: 50),
+                            title: Text(product),
+                            subtitle: Text('\$${(widget.cartItems[product]! * 15.25).toStringAsFixed(2)}'),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.remove),
+                                  onPressed: () => updateQuantity(product, -1),
+                                ),
+                                Text(widget.cartItems[product]!.toString()),
+                                IconButton(
+                                  icon: Icon(Icons.add),
+                                  onPressed: () => updateQuantity(product, 1),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.delete, color: Colors.red),
+                                  onPressed: () => removeItem(product),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.asset(
-                                item.product.imageUrl,
-                                width: 80,
-                                height: 80,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    item.product.name,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '\$${item.product.price.toStringAsFixed(2)}',
-                                    style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width: 16,
-                                        height: 16,
-                                        decoration: BoxDecoration(
-                                          color: item.selectedColor,
-                                          shape: BoxShape.circle,
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      ScaleOnTap(
-                                        onTap: () {
-                                          if (item.quantity > 1) {
-                                            setState(() {
-                                              item.quantity--;
-                                            });
-                                          }
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.all(4),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[200],
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                          ),
-                                          child: const Icon(Icons.remove,
-                                              size: 16),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 12),
-                                        child: Text(
-                                          item.quantity.toString(),
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                      ScaleOnTap(
-                                        onTap: () {
-                                          setState(() {
-                                            item.quantity++;
-                                          });
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.all(4),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[200],
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                          ),
-                                          child:
-                                              const Icon(Icons.add, size: 16),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(24),
+                          ),
+                        );
+                      }).toList(),
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, -5),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Order Info',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                          ScaleOnTap(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const VoucherScreen(),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.blue[50],
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.local_offer_outlined,
-                                    size: 16,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'Add voucher code',
-                                    style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Subtotal'),
-                          Text(
-                            '\$${_subtotal.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      ScaleOnTap(
-                        onTap: () {
-                          // Checkout logic
-                        },
-                        child: Container(
-                          width: double.infinity,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Checkout (\$${_subtotal.toStringAsFixed(2)})',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+            ),
+            Divider(),
+            TextField(
+              controller: voucherController,
+              decoration: InputDecoration(
+                labelText: 'Enter Voucher Code',
+                border: OutlineInputBorder(),
+                errorText: errorMessage,
+                suffixIcon: ElevatedButton(
+                  onPressed: applyVoucher,
+                  child: Text('Apply'),
                 ),
+              ),
+            ),
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Subtotal:', style: TextStyle(fontSize: 16)),
+                Text('\$${subtotal.toStringAsFixed(2)}', style: TextStyle(fontSize: 16)),
               ],
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Discount:', style: TextStyle(fontSize: 16, color: Colors.green)),
+                Text('-\$${discount.toStringAsFixed(2)}', style: TextStyle(fontSize: 16, color: Colors.green)),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Shipping Cost:', style: TextStyle(fontSize: 16)),
+                Text('\$${shippingCost.toStringAsFixed(2)}', style: TextStyle(fontSize: 16)),
+              ],
+            ),
+            Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Total:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text('\$${total.toStringAsFixed(2)}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              ],
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+  onPressed: widget.cartItems.isEmpty
+      ? null
+      : () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ShippingAddressScreen()),
+          );
+        },
+  style: ElevatedButton.styleFrom(
+    minimumSize: Size(double.infinity, 50),
+    backgroundColor: Colors.green,
+  ),
+  child: Text(
+    'Checkout (${widget.cartItems.length})',
+    style: TextStyle(color: Colors.white),
+  ),
+),
+
+          ],
+        ),
+      ),
     );
   }
-}
-
-class CartItem {
-  final Product product;
-  int quantity;
-  final Color selectedColor;
-
-  CartItem({
-    required this.product,
-    required this.quantity,
-    required this.selectedColor,
-  });
 }

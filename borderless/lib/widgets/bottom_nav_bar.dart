@@ -34,34 +34,38 @@ class BottomNavBar extends StatelessWidget {
 
           switch (index) {
             case 0:
-              Navigator.pushReplacement(
+              Navigator.pushNamedAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
+                '/home',
+                (route) => false, // Removes all the previous routes
               );
               break;
             case 1:
-              Navigator.pushReplacement(
+              Navigator.pushNamedAndRemoveUntil(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => const CategoriesScreen()),
+                '/categories',
+                (route) => false,
               );
               break;
             case 2:
-              Navigator.pushReplacement(
+              Navigator.pushNamedAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => const WishlistScreen()),
+                '/wishlist',
+                (route) => false,
               );
               break;
             case 3:
-              Navigator.pushReplacement(
+              Navigator.pushNamedAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => const CartScreen()),
+                '/cart',
+                (route) => false,
               );
               break;
             case 4:
-              Navigator.pushReplacement(
+              Navigator.pushNamedAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                '/profile',
+                (route) => false,
               );
               break;
           }
