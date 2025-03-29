@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'subtitle': '30% OFF on headphones',
     },
     {
-      'image': 'assets/images/banner2.png',
+      'image': 'assets/images/banner.png',
       'title': 'New Collection',
       'subtitle': 'Smart Watches & Accessories',
     },
