@@ -5,36 +5,33 @@ import 'product.dart';
 class CartItem {
   final Product product;
   final int quantity;
-  final String selectedSize;
   final Color selectedColor;
-  final String imageUrl;
+  final String? selectedSize;
   bool isSavedForLater;
 
   CartItem({
     required this.product,
     required this.quantity,
-    required this.selectedSize,
     required this.selectedColor,
-    required this.imageUrl,
+    this.selectedSize,
     this.isSavedForLater = false,
   });
 
+  String get imageUrl => product.imageUrl;
   double get totalPrice => product.price * quantity;
 
   CartItem copyWith({
     Product? product,
     int? quantity,
-    String? selectedSize,
     Color? selectedColor,
-    String? imageUrl,
+    String? selectedSize,
     bool? isSavedForLater,
   }) {
     return CartItem(
       product: product ?? this.product,
       quantity: quantity ?? this.quantity,
-      selectedSize: selectedSize ?? this.selectedSize,
       selectedColor: selectedColor ?? this.selectedColor,
-      imageUrl: imageUrl ?? this.imageUrl,
+      selectedSize: selectedSize ?? this.selectedSize,
       isSavedForLater: isSavedForLater ?? this.isSavedForLater,
     );
   }
@@ -45,7 +42,6 @@ class CartItem {
       'quantity': quantity,
       'selectedSize': selectedSize,
       'selectedColor': selectedColor.value,
-      'imageUrl': imageUrl,
       'isSavedForLater': isSavedForLater,
     };
   }
@@ -56,7 +52,6 @@ class CartItem {
       quantity: json['quantity'],
       selectedSize: json['selectedSize'],
       selectedColor: Color(json['selectedColor']),
-      imageUrl: json['imageUrl'],
       isSavedForLater: json['isSavedForLater'] ?? false,
     );
   }

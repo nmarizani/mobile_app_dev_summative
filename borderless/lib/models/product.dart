@@ -16,6 +16,7 @@ class Product extends Equatable {
   final List<String>? sizes;
   final double? rating;
   final int? reviews;
+  final bool isNew;
 
   const Product({
     required this.id,
@@ -32,6 +33,7 @@ class Product extends Equatable {
     this.sizes,
     this.rating,
     this.reviews,
+    this.isNew = false,
   });
 
   @override
@@ -50,6 +52,7 @@ class Product extends Equatable {
         sizes,
         rating,
         reviews,
+        isNew,
       ];
 
   Product copyWith({
@@ -67,6 +70,7 @@ class Product extends Equatable {
     List<String>? sizes,
     double? rating,
     int? reviews,
+    bool? isNew,
   }) {
     return Product(
       id: id ?? this.id,
@@ -83,6 +87,7 @@ class Product extends Equatable {
       sizes: sizes ?? this.sizes,
       rating: rating ?? this.rating,
       reviews: reviews ?? this.reviews,
+      isNew: isNew ?? this.isNew,
     );
   }
 
@@ -124,6 +129,7 @@ class Product extends Equatable {
       sizes: json['sizes']?.cast<String>(),
       rating: json['rating'].toDouble(),
       reviews: json['reviews'],
+      isNew: json['isNew'] ?? false,
     );
   }
 }
