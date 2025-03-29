@@ -74,7 +74,66 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/images/logo.png
+    - assets/images/banner.png
+    - assets/images/banner2.png
+    - assets/images/apple_watch.png
+    - assets/images/backpack.png
+    - assets/images/earbuds.png
+    - assets/images/handbag.png
+    - assets/images/headphones.png
+    - assets/images/watch.png
+    - assets/images/shoes.png
+    - assets/images/headphones1.png
+    - assets/images/headphones2.png
+    - assets/images/headphones3.png
+    - assets/images/headphones4.png
+    - assets/images/headphones5.png
+    - assets/images/headphones6.png
+    - assets/images/watch1.png
+    - assets/images/watch1_2.png
+    - assets/images/watch1_3.png
+    - assets/images/nike_shoes.png
+    - assets/images/glasses.png
+    - assets/images/empty_orders.png
+    - assets/images/empty_cart.png
+    - assets/images/empty_wishlist.png
+    - assets/images/onboarding1.png
+    - assets/images/onboarding2.png
+    - assets/images/onboarding3.png
+    - assets/images/paypal.png
+    - assets/images/google_pay.png
+    - assets/images/visa.png
+    - assets/images/mastercard.png
+    - assets/images/pk_flag.png
+    - assets/images/order_success.png
+    - assets/images/lock_success.png
+    - assets/images/headphone1.png
+    - assets/images/headphones.png
+    - assets/images/smartwatch.png
+    - assets/images/coffee_table.png
+    - assets/images/tool_set.png
+    - assets/images/vase.png
+    - assets/images/subcategories/
+    - assets/images/subcategories/laptops.png
+    - assets/images/subcategories/mobile_phones.png
+    - assets/images/subcategories/headphones.png
+    - assets/images/subcategories/smart_watches.png
+    - assets/images/subcategories/mobile_cases.png
+    - assets/images/subcategories/monitors.png
     - assets/icons/
+    - assets/icons/electronics_tv.png
+    - assets/icons/electrical.png
+    - assets/icons/filter.svg
+    - assets/icons/search.svg
+    - assets/icons/google.png
+    - assets/icons/electronics.png
+    - assets/icons/fashion.png
+    - assets/icons/furniture.png
+    - assets/icons/industrial.png
+    - assets/icons/home_decor.png
+    - assets/icons/construction.png
+    - assets/icons/fabrication.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
