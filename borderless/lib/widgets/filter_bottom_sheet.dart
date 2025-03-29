@@ -8,161 +8,118 @@ class FilterBottomSheet extends StatefulWidget {
 }
 
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
-  RangeValues _priceRange = const RangeValues(0, 100);
-  String _selectedCategory = 'All';
-  List<String> _selectedBrands = [];
-
-  final List<String> _categories = ['All', 'Headphones', 'Wireless', 'Sports'];
-  final List<String> _brands = ['Sony', 'Bose', 'JBL', 'Samsung', 'Apple'];
+  String _selectedSort = 'Price (High to Low)';
+  final List<String> _sortOptions = [
+    'Price (Low to High)',
+    'Price (High to Low)',
+    'A-Z',
+    'Z-A',
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.grey)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Filter',
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Filter',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _selectedSort = 'Price (High to Low)';
+                  });
+                },
+                child: Text(
+                  'Clear All',
                   style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Colors.grey[600],
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: _sortOptions.map((option) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ChoiceChip(
+                    label: Text(option),
+                    selected: _selectedSort == option,
+                    onSelected: (selected) {
+                      if (selected) {
+                        setState(() {
+                          _selectedSort = option;
+                        });
+                      }
+                    },
+                    backgroundColor: Colors.white,
+                    selectedColor: const Color(0xFF21D4B4).withOpacity(0.1),
+                    labelStyle: TextStyle(
+                      color: _selectedSort == option
+                          ? const Color(0xFF21D4B4)
+                          : Colors.black,
+                      fontSize: 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: BorderSide(
+                        color: _selectedSort == option
+                            ? const Color(0xFF21D4B4)
+                            : Colors.grey[300]!,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
           ),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Price Range',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  RangeSlider(
-                    values: _priceRange,
-                    min: 0,
-                    max: 100,
-                    divisions: 100,
-                    labels: RangeLabels(
-                      '\$${_priceRange.start.round()}',
-                      '\$${_priceRange.end.round()}',
-                    ),
-                    onChanged: (RangeValues values) {
-                      setState(() {
-                        _priceRange = values;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Category',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Wrap(
-                    spacing: 8,
-                    children: _categories.map((category) {
-                      return FilterChip(
-                        label: Text(category),
-                        selected: _selectedCategory == category,
-                        onSelected: (bool selected) {
-                          setState(() {
-                            _selectedCategory = category;
-                          });
-                        },
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Brands',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Wrap(
-                    spacing: 8,
-                    children: _brands.map((brand) {
-                      return FilterChip(
-                        label: Text(brand),
-                        selected: _selectedBrands.contains(brand),
-                        onSelected: (bool selected) {
-                          setState(() {
-                            if (selected) {
-                              _selectedBrands.add(brand);
-                            } else {
-                              _selectedBrands.remove(brand);
-                            }
-                          });
-                        },
-                      );
-                    }).toList(),
-                  ),
-                ],
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, _selectedSort);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF21D4B4),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                'Apply',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      setState(() {
-                        _priceRange = const RangeValues(0, 100);
-                        _selectedCategory = 'All';
-                        _selectedBrands.clear();
-                      });
-                    },
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                    child: const Text('Reset'),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Apply filters and close sheet
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                    child: const Text('Apply'),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          const SizedBox(height: 16),
         ],
       ),
     );

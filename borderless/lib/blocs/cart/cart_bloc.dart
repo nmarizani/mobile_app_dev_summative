@@ -86,7 +86,6 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         quantity: event.quantity,
         selectedSize: event.selectedSize,
         selectedColor: event.selectedColor,
-        imageUrl: event.imageUrl,
       ));
     }
 

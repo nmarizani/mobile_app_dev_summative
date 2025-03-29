@@ -27,12 +27,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Map<String, String>> _banners = [
     {
-      'image': 'assets/images/banner.jpg',
+      'image': 'assets/images/banner.png',
       'title': 'Exclusive Sales',
       'subtitle': '30% OFF on headphones',
     },
     {
-      'image': 'assets/images/banner2.jpg',
+      'image': 'assets/images/banner2.png',
       'title': 'New Collection',
       'subtitle': 'Smart Watches & Accessories',
     },

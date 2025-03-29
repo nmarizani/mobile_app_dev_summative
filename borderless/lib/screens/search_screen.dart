@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import '../widgets/filter_bottom_sheet.dart';
+import 'exclusive_sale_screen.dart' as exclusive;
 import '../models/product.dart';
-import '../widgets/bottom_nav_bar.dart';
-import '../widgets/animated_widgets.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -12,7 +13,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final List<String> _recentSearches = [
+  final List<String> recentSearches = [
     'Smart watch',
     'Laptop',
     'Women bag',
@@ -25,23 +26,27 @@ class _SearchScreenState extends State<SearchScreen> {
   final List<Product> _searchResults = [
     Product(
       id: '1',
-      name: 'Nike air jordan retro 1...',
-      price: 126.00,
+      name: 'Nike Air Max 270',
+      description: 'Men\'s Running Shoes',
+      price: 150.00,
       imageUrl: 'assets/images/nike_shoes.png',
-      description:
-          'Nike Air Jordan Retro 1 High OG sneakers in classic colorway.',
-      category: 'Fashion',
-      colors: [Colors.red, Colors.green, Colors.blue],
+      category: 'Shoes',
+      colors: [Colors.black, Colors.white, Colors.red],
+      isAvailable: true,
+      rating: 4.5,
+      reviews: 128,
     ),
     Product(
       id: '2',
-      name: 'Classic new black glas...',
-      price: 84.50,
+      name: 'Ray-Ban Sunglasses',
+      description: 'Classic Aviator Style',
+      price: 199.99,
       imageUrl: 'assets/images/glasses.png',
-      description:
-          'Classic black glasses with modern design and UV protection.',
-      category: 'Fashion',
-      colors: [Colors.black, Colors.brown],
+      category: 'Accessories',
+      colors: [Colors.black, Colors.grey],
+      isAvailable: true,
+      rating: 4.3,
+      reviews: 95,
     ),
   ];
 
@@ -51,106 +56,140 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
+  void _showFilterBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const FilterBottomSheet(),
+    );
+  }
+
+  void _navigateToExclusiveSale() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const exclusive.ExclusiveSaleScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Image.asset(
-                    'assets/images/logo.png',
-                    height: 24,
-                  ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
-                  ),
-                ],
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          IconButton(
+            icon: SvgPicture.asset(
+              'assets/icons/filter.svg',
+              width: 24,
+              height: 24,
+            ),
+            onPressed: _showFilterBottomSheet,
+          ),
+        ],
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: TextField(
+              controller: _searchController,
+              autofocus: true,
+              decoration: InputDecoration(
+                hintText: 'Search',
+                hintStyle: TextStyle(
+                  color: Colors.grey[400],
+                  fontSize: 16,
+                ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: Colors.grey[400],
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Color(0xFF21D4B4)),
+                ),
+              ),
+              onSubmitted: (value) {
+                if (value.isNotEmpty) {
+                  _navigateToExclusiveSale();
+                }
+              },
+            ),
+          ),
+          const SizedBox(height: 24),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'RECENT SEARCH',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[600],
               ),
             ),
-            Padding(
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: ListView.builder(
+              itemCount: recentSearches.length,
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search',
-                    hintStyle: TextStyle(
-                      color: Colors.grey.shade400,
-                      fontSize: 14,
-                    ),
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: Colors.grey.shade400,
-                      size: 20,
-                    ),
-                    suffixIcon: Icon(
-                      Icons.tune,
-                      color: Colors.grey.shade400,
-                      size: 20,
-                    ),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
-                    ),
-                  ),
-                  onChanged: (value) {
-                    // Implement search logic
-                    setState(() {});
-                  },
-                ),
-              ),
+              itemBuilder: (context, index) {
+                return _buildRecentSearchItem(recentSearches[index]);
+              },
             ),
-            const SizedBox(height: 24),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'RECENT SEARCH',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecentSearchItem(String search) {
+    return InkWell(
+      onTap: () {
+        _searchController.text = search;
+        _navigateToExclusiveSale();
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          children: [
+            Icon(
+              Icons.history,
+              color: Colors.grey[400],
+              size: 20,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(width: 12),
             Expanded(
-              child: ListView.builder(
-                itemCount: _recentSearches.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(
-                      _recentSearches[index],
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    trailing: const Icon(
-                      Icons.arrow_forward,
-                      size: 16,
-                      color: Colors.grey,
-                    ),
-                    onTap: () {
-                      _searchController.text = _recentSearches[index];
-                      setState(() {});
-                    },
-                  );
-                },
+              child: Text(
+                search,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black,
+                ),
               ),
+            ),
+            Icon(
+              Icons.arrow_forward,
+              color: Colors.grey[400],
+              size: 20,
             ),
           ],
         ),
