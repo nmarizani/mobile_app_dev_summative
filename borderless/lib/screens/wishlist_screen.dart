@@ -1,91 +1,65 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../blocs/wishlist/wishlist_bloc.dart' as bloc;
-import '../blocs/wishlist/wishlist_event.dart' as event;
 
-abstract class WishlistState {
+class WishlistScreen extends StatefulWidget {
   final Set<String> wishlistItems;
-  final bool isLoading;
-  final String? error;
 
-  const WishlistState({
-    this.wishlistItems = const {},
-    this.isLoading = false,
-    this.error,
-  });
+  const WishlistScreen({super.key, required this.wishlistItems});
+
+  @override
+  State<WishlistScreen> createState() => _WishlistScreenState();
 }
 
-abstract class WishlistEvent {}
-
-class LoadWishlist extends WishlistEvent {}
-
-class AddToWishlist extends WishlistEvent {
-  final String item;
-  AddToWishlist(this.item);
-}
-
-class RemoveFromWishlist extends WishlistEvent {
-  final String item;
-  RemoveFromWishlist(this.item);
-}
-
-class ClearWishlist extends WishlistEvent {}
-
-class WishlistScreen extends StatelessWidget {
-  const WishlistScreen({super.key});
+class _WishlistScreenState extends State<WishlistScreen> {
+  // Method to remove an item from the wishlist
+  void removeItem(String item) {
+    setState(() {
+      widget.wishlistItems.remove(item);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Wishlist')),
-      body: BlocBuilder<WishlistBloc, WishlistState>(
-        builder: (context, state) {
-          if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (state.error != null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(state.error!),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<WishlistBloc>().add(LoadWishlist());
-                    },
-                    child: const Text('Retry'),
-                  ),
-                ],
+      body: widget.wishlistItems.isEmpty
+          ? _buildEmptyWishlist()
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ListView.builder(
+                itemCount: widget.wishlistItems.length,
+                itemBuilder: (context, index) {
+                  String item = widget.wishlistItems.elementAt(index);
+                  return Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ListTile(
+                      leading: Image.asset(
+                        'assets/${item.toLowerCase().replaceAll(" ", "_")}.png',
+                        width: 50,
+                      ),
+                      title: Text(
+                        item,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(index == 0 ? '\$15.25' : '\$12.00',
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.green)),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => removeItem(item),
+                      ),
+                    ),
+                  );
+                },
               ),
-            );
-          }
-
-          if (state.wishlistItems.isEmpty) {
-            return _buildEmptyWishlist(context);
-          }
-
-          return ListView.builder(
-            itemCount: state.wishlistItems.length,
-            itemBuilder: (context, index) {
-              final item = state.wishlistItems.elementAt(index);
-              return ListTile(
-                title: Text(item),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () {
-                    context.read<WishlistBloc>().add(RemoveFromWishlist(item));
-                  },
-                ),
-              );
-            },
-          );
-        },
-      ),
+            ),
     );
   }
 
-  Widget _buildEmptyWishlist(BuildContext context) {
+  // Widget to display when the wishlist is empty
+  Widget _buildEmptyWishlist() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -118,14 +92,4 @@ class WishlistScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
-  WishlistBloc() : super(const WishlistInitial()) {
-    on<LoadWishlist>(_onLoadWishlist);
-    on<AddToWishlist>(_onAddToWishlist);
-    on<RemoveFromWishlist>(_onRemoveFromWishlist);
-    on<ClearWishlist>(_onClearWishlist);
-  }
-  // ... implement event handlers
 }
