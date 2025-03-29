@@ -137,30 +137,28 @@ class WishlistScreen extends StatelessWidget {
           ),
           const SizedBox(height: 32),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const CategoriesScreen()),
-            );
-          },
-          child: const Text('Explore Categories'),
+  padding: const EdgeInsets.symmetric(horizontal: 16),
+  child: SizedBox(
+    width: double.infinity,
+    child: ElevatedButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CategoriesScreen()),
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.black,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
-              ),
-            ),
-          ),
+      ),
+      child: const Text('Explore Categories'),
+    ),
+  ),
+),
+
         ],
       ),
     );
