@@ -39,19 +39,17 @@ class WishlistState extends Equatable {
 class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
   WishlistBloc() : super(const WishlistState([])) {
     on<AddToWishlist>((event, emit) {
-      final updatedWishlist = List<Map<String, dynamic>>.from(state.wishlistItems);
+      final updatedWishlist =
+          List<Map<String, dynamic>>.from(state.wishlistItems);
       updatedWishlist.add(event.product);
       emit(WishlistState(updatedWishlist));
     });
 
     on<RemoveFromWishlist>((event, emit) {
-      final updatedWishlist = state.wishlistItems.where((item) => item['name'] != event.productName).toList();
+      final updatedWishlist = state.wishlistItems
+          .where((item) => item['name'] != event.productName)
+          .toList();
       emit(WishlistState(updatedWishlist));
     });
   }
 }
-
-
-
-
-

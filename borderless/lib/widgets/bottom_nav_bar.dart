@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../screens/home_screen.dart';
 import '../screens/categories_screen.dart';
+import '../screens/wishlist_screen.dart';
 import '../screens/cart_screen.dart';
 import '../screens/profile_screen.dart';
-import '../screens/wishlist_screen.dart';
+import '../blocs/wishlist/wishlist_bloc.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
 
   const BottomNavBar({
-    Key? key,
+    super.key,
     required this.currentIndex,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,47 +31,6 @@ class BottomNavBar extends StatelessWidget {
       ),
       child: BottomNavigationBar(
         currentIndex: currentIndex,
-        onTap: (index) {
-          if (index == currentIndex) return;
-
-          switch (index) {
-            case 0:
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/home',
-                (route) => false, // Removes all the previous routes
-              );
-              break;
-            case 1:
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/categories',
-                (route) => false,
-              );
-              break;
-            case 2:
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/wishlist',
-                (route) => false,
-              );
-              break;
-            case 3:
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/cart',
-                (route) => false,
-              );
-              break;
-            case 4:
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/profile',
-                (route) => false,
-              );
-              break;
-          }
-        },
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -107,6 +68,43 @@ class BottomNavBar extends StatelessWidget {
             label: 'Profile',
           ),
         ],
+        onTap: (index) {
+          if (index == currentIndex) return;
+
+          switch (index) {
+            case 0:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+              );
+              break;
+            case 1:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const CategoriesScreen()),
+              );
+              break;
+            case 2:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const WishlistScreen()),
+              );
+              break;
+            case 3:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const CartScreen()),
+              );
+              break;
+            case 4:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+              );
+              break;
+          }
+        },
       ),
     );
   }

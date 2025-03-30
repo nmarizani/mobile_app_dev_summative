@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'forgot_password_screen.dart';
+import '../widgets/logo.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -33,26 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      'B',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF21D4B4),
-                      ),
-                    ),
-                    const Text(
-                      'ORDERLESS',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
+                const Logo(size: 32),
                 const SizedBox(height: 32),
                 const Text(
                   'Login',

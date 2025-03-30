@@ -12,52 +12,47 @@ class CategoriesScreen extends StatefulWidget {
 }
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
-  final List<Category> _categories = [
-    Category(
-      id: '1',
-      name: 'Electronics',
-      imageUrl: 'assets/icons/electronics.png',
-    ),
-    Category(
-      id: '2',
-      name: 'Fashion',
-      imageUrl: 'assets/icons/fashion.png',
-    ),
-    Category(
-      id: '3',
-      name: 'Furniture',
-      imageUrl: 'assets/icons/furniture.png',
-    ),
-    Category(
-      id: '4',
-      name: 'Industrial',
-      imageUrl: 'assets/icons/industrial.png',
-    ),
-    Category(
-      id: '5',
-      name: 'Home Decor',
-      imageUrl: 'assets/icons/home_decor.png',
-    ),
-    Category(
-      id: '6',
-      name: 'Electronics',
-      imageUrl: 'assets/icons/electronics_tv.png',
-    ),
-    Category(
-      id: '7',
-      name: 'Construction & Real Estate',
-      imageUrl: 'assets/icons/construction.png',
-    ),
-    Category(
-      id: '8',
-      name: 'Fabrication Service',
-      imageUrl: 'assets/icons/fabrication.png',
-    ),
-    Category(
-      id: '9',
-      name: 'Electrical Equipment',
-      imageUrl: 'assets/icons/electrical.png',
-    ),
+  final List<Map<String, dynamic>> categories = const [
+    {
+      'name': 'Fashion',
+      'icon': Icons.checkroom,
+      'color': Color(0xFFE57373),
+    },
+    {
+      'name': 'Electronics',
+      'icon': Icons.devices,
+      'color': Color(0xFF64B5F6),
+    },
+    {
+      'name': 'Furniture',
+      'icon': Icons.chair,
+      'color': Color(0xFF81C784),
+    },
+    {
+      'name': 'Fabrication',
+      'icon': Icons.engineering,
+      'color': Color(0xFFFFB74D),
+    },
+    {
+      'name': 'Industrial',
+      'icon': Icons.factory,
+      'color': Color(0xFF7986CB),
+    },
+    {
+      'name': 'Electrical',
+      'icon': Icons.electric_bolt,
+      'color': Color(0xFFFFD54F),
+    },
+    {
+      'name': 'Construction',
+      'icon': Icons.construction,
+      'color': Color(0xFFBA68C8),
+    },
+    {
+      'name': 'Home Decor',
+      'icon': Icons.home,
+      'color': Color(0xFF4DB6AC),
+    },
   ];
 
   @override
@@ -91,67 +86,63 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       body: GridView.builder(
         padding: const EdgeInsets.all(16),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          mainAxisSpacing: 16,
+          crossAxisCount: 2,
+          childAspectRatio: 1.2,
           crossAxisSpacing: 16,
-          childAspectRatio: 0.85,
+          mainAxisSpacing: 16,
         ),
-        itemCount: _categories.length,
+        itemCount: categories.length,
         itemBuilder: (context, index) {
-          final category = _categories[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SubcategoriesScreen(category: category),
+          final category = categories[index];
+          return Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SubcategoriesScreen(
+                      category: category['name'],
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      category['color'],
+                      category['color'].withOpacity(0.8),
+                    ],
+                  ),
                 ),
-              );
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 56,
-                    height: 56,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
-                      borderRadius: BorderRadius.circular(12),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      category['icon'],
+                      size: 48,
+                      color: Colors.white,
                     ),
-                    child: Image.asset(
-                      category.imageUrl,
-                      width: 32,
-                      height: 32,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(
-                      category.name,
+                    const SizedBox(height: 8),
+                    Text(
+                      category['name'],
                       style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );

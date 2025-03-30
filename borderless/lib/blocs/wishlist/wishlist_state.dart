@@ -1,22 +1,19 @@
 import 'package:equatable/equatable.dart';
 import '../../models/product.dart';
 
-abstract class WishlistState extends Equatable {
-  final List<Product> items;
+abstract class WishlistState {
+  final Set<String> wishlistItems;
   final bool isLoading;
   final String? error;
 
   const WishlistState({
-    this.items = const [],
+    this.wishlistItems = const {},
     this.isLoading = false,
     this.error,
   });
 
-  @override
-  List<Object?> get props => [items, isLoading, error];
-
   WishlistState copyWith({
-    List<Product>? items,
+    Set<String>? wishlistItems,
     bool? isLoading,
     String? error,
   });
@@ -27,7 +24,7 @@ class WishlistInitial extends WishlistState {
 
   @override
   WishlistState copyWith({
-    List<Product>? items,
+    Set<String>? wishlistItems,
     bool? isLoading,
     String? error,
   }) {
@@ -40,7 +37,7 @@ class WishlistLoading extends WishlistState {
 
   @override
   WishlistState copyWith({
-    List<Product>? items,
+    Set<String>? wishlistItems,
     bool? isLoading,
     String? error,
   }) {
@@ -50,37 +47,30 @@ class WishlistLoading extends WishlistState {
 
 class WishlistLoaded extends WishlistState {
   const WishlistLoaded({
-    required List<Product> items,
-    String? error,
-  }) : super(
-          items: items,
-          isLoading: false,
-          error: error,
-        );
+    required Set<String> wishlistItems,
+  }) : super(wishlistItems: wishlistItems);
 
   @override
   WishlistState copyWith({
-    List<Product>? items,
+    Set<String>? wishlistItems,
     bool? isLoading,
     String? error,
   }) {
     return WishlistLoaded(
-      items: items ?? this.items,
-      error: error ?? this.error,
+      wishlistItems: wishlistItems ?? this.wishlistItems,
     );
   }
 }
 
 class WishlistError extends WishlistState {
-  const WishlistError({required String error})
-      : super(error: error, isLoading: false);
+  const WishlistError(String error) : super(error: error);
 
   @override
   WishlistState copyWith({
-    List<Product>? items,
+    Set<String>? wishlistItems,
     bool? isLoading,
     String? error,
   }) {
-    return WishlistError(error: error ?? this.error!);
+    return WishlistError(error ?? this.error!);
   }
 }

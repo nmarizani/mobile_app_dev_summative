@@ -22,7 +22,6 @@ import 'screens/payment_method_screen.dart';
 import 'screens/checkout_review_screen.dart';
 import 'screens/order_tracking_screen.dart';
 import 'screens/order_success_screen.dart';
-import 'package:flutter/rendering.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,16 +41,6 @@ void main() {
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
-void main() {
-  runApp(
-    MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => WishlistBloc()),
-      ],
-      child: const MyApp(),
-    ),
-  );
-}
 
   runApp(const MyApp());
 }

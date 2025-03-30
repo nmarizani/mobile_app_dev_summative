@@ -169,7 +169,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     children: [
                       Icon(Icons.add_shopping_cart, color: Colors.black),
                       SizedBox(width: 5),
-                      Text('Add To Cart', style: TextStyle(color: Colors.black)),
+                      Text('Add To Cart',
+                          style: TextStyle(color: Colors.black)),
                     ],
                   ),
                 ),
@@ -182,8 +183,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                     );
                   },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                   child: const Text('Go to Cart',
                       style: TextStyle(color: Colors.white)),
                 ),
