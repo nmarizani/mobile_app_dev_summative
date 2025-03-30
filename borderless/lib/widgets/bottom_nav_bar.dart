@@ -88,7 +88,9 @@ class BottomNavBar extends StatelessWidget {
             case 2:
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => const WishlistScreen()),
+                MaterialPageRoute(
+  builder: (context) => WishlistScreen(wishlistItems: []), 
+),
               );
               break;
             case 3:

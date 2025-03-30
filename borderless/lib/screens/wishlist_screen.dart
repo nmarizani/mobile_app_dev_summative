@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class WishlistScreen extends StatefulWidget {
-  final Set<String> wishlistItems;
+  final List<String> wishlistItems; 
 
   const WishlistScreen({super.key, required this.wishlistItems});
 

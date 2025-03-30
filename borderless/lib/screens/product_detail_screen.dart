@@ -14,29 +14,31 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int cartCount = 0;
   bool showSuccessMessage = false;
 
-  Set<String> wishlist = {}; // Wishlist storage
+
   Map<String, int> cartItems = {}; // Cart storage
+  List<String> wishlist = []; // Wishlist storage
 
-  void toggleWishlist() {
-    setState(() {
-      if (isLiked) {
-        wishlist.remove('Loop Silicone Smartwatch'); // Remove from wishlist
-      } else {
-        wishlist.add('Loop Silicone Smartwatch'); // Add to wishlist
-      }
-      isLiked = !isLiked;
-    });
-
-    // Navigate to wishlist if item is added
+void toggleWishlist() {
+  setState(() {
     if (isLiked) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => WishlistScreen(wishlistItems: wishlist),
-        ),
-      );
+      wishlist.remove('Loop Silicone Smartwatch'); // Remove from wishlist
+    } else {
+      wishlist.add('Loop Silicone Smartwatch'); // Add to wishlist
     }
+    isLiked = !isLiked;
+  });
+
+  // Navigate to wishlist if item is added
+  if (isLiked) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => WishlistScreen(wishlistItems: wishlist), // ✅ Fix: Use List<String>
+      ),
+    );
   }
+}
+
 
   void addToCart() {
     setState(() {
