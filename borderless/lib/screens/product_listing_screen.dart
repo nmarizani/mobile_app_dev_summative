@@ -92,6 +92,28 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
     );
   }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  List<Map<String, dynamic>> _applyFilter(List<Map<String, dynamic>> watches, String filter) {
+    List<Map<String, dynamic>> sortedList = List.from(watches);
+    switch (filter) {
+      case 'Price (Low to High)':
+        sortedList.sort((a, b) => a['price'].compareTo(b['price']));
+        break;
+      case 'Price (High to Low)':
+        sortedList.sort((a, b) => b['price'].compareTo(a['price']));
+        break;
+      case 'A - Z':
+        sortedList.sort((a, b) => a['name'].compareTo(b['name']));
+        break;
+      case 'Z - A':
+        sortedList.sort((a, b) => b['name'].compareTo(a['name']));
+        break;
+    }
+    return sortedList;
+=======
+>>>>>>> b0f257b (Initial commit)
   Widget _buildWatchCard(int index) {
     final watch = watches[index];
 
@@ -102,6 +124,68 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
           MaterialPageRoute(
             builder: (context) =>
                 const ProductDetailScreen(), // ✅ Adjust if necessary
+<<<<<<< HEAD
+=======
+          ),
+        );
+      },
+      child: Card(
+        child: Column(
+          children: [
+            Image.asset(watch['image'], height: 120),
+            Text(watch['name']),
+            Text("\$${watch['price']}"),
+            BlocBuilder<WishlistBloc, WishlistState>(builder: (context, state) {
+              final isWishlisted = state.wishlistItems
+                  .any((item) => item['name'] == watch['name']);
+              return IconButton(
+                  icon: Icon(
+                      isWishlisted ? Icons.favorite : Icons.favorite_border,
+                      color: isWishlisted ? Colors.red : null),
+                  onPressed: () {
+                    if (isWishlisted) {
+                      context
+                          .read<WishlistBloc>()
+                          .add(RemoveFromWishlist(watch['name']));
+                    } else {
+                      context.read<WishlistBloc>().add(AddToWishlist(watch));
+                    }
+                  });
+            })
+          ],
+        ),
+      ),
+    );
+>>>>>>> 766c2b0 (Initial commit)
+  }
+Widget _buildWatchCard(Map<String, dynamic> watch) {
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProductDetailScreen(),
+        ),
+      );
+    },
+    child: Card(
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(10.0)),
+              child: Image.asset(
+                watch['image'],
+                fit: BoxFit.cover,
+                width: double.infinity,
+              ),
+            ),
+>>>>>>> b0f257b (Initial commit)
           ),
         );
       },

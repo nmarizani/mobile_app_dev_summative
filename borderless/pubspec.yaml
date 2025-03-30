@@ -95,14 +95,65 @@ flutter:
     - assets/images/onboarding1.png
     - assets/images/onboarding2.png
     - assets/images/onboarding3.png
+    - assets/images/apple-watch-series8.png
     - assets/images/paypal.png
     - assets/images/pk_flag.png
     - assets/images/order_success.png
     - assets/images/lock_success.png
+<<<<<<< HEAD
     - assets/images/smartwatch.png
     - assets/images/backpack.png
     - assets/images/earbuds.png
     - assets/images/profile_image.png
+=======
+    - assets/images/headphone1.png
+    - assets/images/smartwatch.png
+    - assets/images/coffee_table.png
+    - assets/images/tool_set.png
+    - assets/images/vase.png
+    - assets/images/subcategories/
+    - assets/images/subcategories/laptops.png
+    - assets/images/subcategories/mobile_phones.png
+    - assets/images/subcategories/headphones.png
+    - assets/images/subcategories/smart_watches.png
+    - assets/images/subcategories/mobile_cases.png
+    - assets/images/subcategories/monitors.png
+    - assets/images/subcategories/mens_clothing.png
+    - assets/images/subcategories/womens_clothing.png
+    - assets/images/subcategories/kids_clothing.png
+    - assets/images/subcategories/shoes.png
+    - assets/images/subcategories/accessories.png
+    - assets/images/subcategories/jewelry.png
+    - assets/images/subcategories/living_room.png
+    - assets/images/subcategories/bedroom.png
+    - assets/images/subcategories/dining_room.png
+    - assets/images/subcategories/office.png
+    - assets/images/subcategories/outdoor.png
+    - assets/images/subcategories/storage.png
+    - assets/images/subcategories/machinery.png
+    - assets/images/subcategories/tools.png
+    - assets/images/subcategories/safety_equipment.png
+    - assets/images/subcategories/industrial_supplies.png
+    - assets/images/subcategories/workwear.png
+    - assets/images/subcategories/maintenance.png
+    - assets/images/subcategories/wall_art.png
+    - assets/images/subcategories/lighting.png
+    - assets/images/subcategories/rugs.png
+    - assets/images/subcategories/cushions.png
+    - assets/images/subcategories/curtains.png
+    - assets/images/subcategories/decorative_items.png
+    - assets/images/subcategories/building_materials.png
+    - assets/images/subcategories/plumbing.png
+    - assets/images/subcategories/electrical.png
+    - assets/images/subcategories/concrete.png
+    - assets/images/subcategories/roofing.png
+    - assets/images/subcategories/insulation.png
+    - assets/icons/
+    - assets/icons/electronics_tv.png
+    - assets/icons/electrical.png
+    - assets/icons/filter.svg
+    - assets/icons/search.svg
+>>>>>>> b0f257b (Initial commit)
     - assets/icons/google.png
     - assets/icons/electronics.png
     - assets/icons/fashion.png
