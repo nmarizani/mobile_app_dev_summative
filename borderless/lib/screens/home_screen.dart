@@ -66,11 +66,6 @@ class _HomeScreenState extends State<HomeScreen> {
       imageUrl: 'assets/icons/home_decor.png',
     ),
     Category(
-      id: '6',
-      name: 'Electronics',
-      imageUrl: 'assets/icons/electronics_tv.png',
-    ),
-    Category(
       id: '7',
       name: 'Construction & Real Estate',
       imageUrl: 'assets/icons/construction.png',
@@ -83,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Category(
       id: '9',
       name: 'Electrical Equipment',
-      imageUrl: 'assets/icons/electrical.png',
+      imageUrl: 'assets/icons/electrical_equipment.png',
     ),
   ];
 
@@ -111,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
       id: '3',
       name: 'Apple Watch Series 8',
       price: 399.00,
-      imageUrl: 'assets/images/apple_watch.png',
+      imageUrl: 'assets/images/smartwatch.png',
       description: 'Latest Apple Watch with advanced health features',
       category: 'Electronics',
       colors: [Colors.black, Colors.grey[300]!, Colors.amber],

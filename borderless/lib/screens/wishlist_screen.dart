@@ -64,7 +64,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset('assets/empty_wishlist.png', width: 150),
+          Image.asset('assets/images/empty_wishlist.png', width: 150),
           const SizedBox(height: 20),
           const Text(
             'Your wishlist is empty',

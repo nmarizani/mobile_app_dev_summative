@@ -61,7 +61,7 @@ class ProfileScreen extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: Colors.grey[300]!),
               image: const DecorationImage(
-                image: NetworkImage('https://example.com/profile.jpg'),
+                image: NetworkImage('assets/images/profile_image.png'),
                 fit: BoxFit.cover,
               ),
             ),
