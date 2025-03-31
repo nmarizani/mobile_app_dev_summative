@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart'; // Add this import for UserProvider
 import '../models/category.dart';
 import '../models/product.dart';
 import '../widgets/bottom_nav_bar.dart';
@@ -17,7 +16,6 @@ import 'wishlist_screen.dart';
 import 'profile/profile_screen.dart';
 import '../widgets/logo.dart';
 import 'product_detail_screen.dart';
-import '../../main.dart'; // Import UserProvider from main.dart
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -202,36 +200,17 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // Align children to start
           children: [
-            // Welcome Message using UserProvider
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8), // Adjusted padding
-              child: Consumer<UserProvider>(
-                builder: (context, userProvider, child) {
-                  return Text(
-                    userProvider.user != null
-                        ? 'Welcome, ${userProvider.user!.email!.split('@')[0]}!' // Use email prefix as a simple greeting
-                        : 'Welcome, Guest!',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  );
-                },
-              ),
-            ),
             // Search Bar
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.all(16),
               child: GestureDetector(
                 onTap: () {
                   Navigator.pushNamed(context, '/search');
                 },
                 child: Container(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
                     borderRadius: BorderRadius.circular(12),
@@ -272,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                const ExclusiveSalesScreen()),
+                                    const ExclusiveSalesScreen()),
                           );
                         },
                         child: Container(
@@ -329,7 +308,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Row(
                       children: List.generate(
                         _banners.length,
-                            (index) => Container(
+                        (index) => Container(
                           width: 8,
                           height: 8,
                           margin: const EdgeInsets.only(left: 4),
@@ -393,17 +372,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                   title: category.name,
                                   products: _latestProducts
                                       .map((product) => {
-                                    'name': product.name,
-                                    'price': product.price,
-                                    'oldPrice': product.oldPrice,
-                                    'image': product.imageUrl,
-                                    'description': product.description,
-                                    'specs': [
-                                      'Specification 1',
-                                      'Specification 2',
-                                      'Specification 3'
-                                    ],
-                                  })
+                                            'name': product.name,
+                                            'price': product.price,
+                                            'oldPrice': product.oldPrice,
+                                            'image': product.imageUrl,
+                                            'description': product.description,
+                                            'specs': [
+                                              'Specification 1',
+                                              'Specification 2',
+                                              'Specification 3'
+                                            ],
+                                          })
                                       .toList(),
                                 ),
                               ),
@@ -473,17 +452,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                 title: 'Latest Products',
                                 products: _latestProducts
                                     .map((product) => {
-                                  'name': product.name,
-                                  'price': product.price,
-                                  'oldPrice': product.oldPrice,
-                                  'image': product.imageUrl,
-                                  'description': product.description,
-                                  'specs': [
-                                    'Specification 1',
-                                    'Specification 2',
-                                    'Specification 3'
-                                  ],
-                                })
+                                          'name': product.name,
+                                          'price': product.price,
+                                          'oldPrice': product.oldPrice,
+                                          'image': product.imageUrl,
+                                          'description': product.description,
+                                          'specs': [
+                                            'Specification 1',
+                                            'Specification 2',
+                                            'Specification 3'
+                                          ],
+                                        })
                                     .toList(),
                               ),
                             ),
@@ -498,7 +477,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       mainAxisSpacing: 16,
                       crossAxisSpacing: 16,

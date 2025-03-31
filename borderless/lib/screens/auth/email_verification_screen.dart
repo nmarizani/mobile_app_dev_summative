@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Added import
-import '../../services/auth_service.dart';
+import 'password_success_screen.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
   final bool isForgotPassword;
@@ -11,27 +10,27 @@ class EmailVerificationScreen extends StatefulWidget {
   });
 
   @override
-  State<EmailVerificationScreen> createState() => _EmailVerificationScreenState();
+  State<EmailVerificationScreen> createState() =>
+      _EmailVerificationScreenState();
 }
 
 class _EmailVerificationScreenState extends State<EmailVerificationScreen>
     with SingleTickerProviderStateMixin {
   final List<TextEditingController> _controllers =
-  List.generate(6, (index) => TextEditingController());
+      List.generate(6, (index) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
   late AnimationController _toastController;
   late Animation<double> _toastAnimation;
   bool _showToast = true;
   bool _isLoading = false;
   String? _error;
-  final AuthService authService = AuthService();
 
   @override
   void initState() {
     super.initState();
     _toastController = AnimationController(
-      vsync: this, // Fixed typo 'xaa'
       duration: const Duration(milliseconds: 300),
+      vsync: this,
     );
     _toastAnimation = CurvedAnimation(
       parent: _toastController,
@@ -71,8 +70,6 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
 
   void _handleVerification() async {
     final code = _controllers.map((controller) => controller.text).join();
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    final sentOTP = args?['otp'] as String?;
 
     if (code.length != 6) {
       setState(() {
@@ -86,32 +83,31 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
       _error = null;
     });
 
-    bool isValid = await authService.verifyOTP(code, sentOTP!);
+    try {
+      // Simulate API call
+      await Future.delayed(const Duration(seconds: 1));
 
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-
-      if (isValid) {
-        await FirebaseAuth.instance.currentUser?.reload(); // Fixed FirebaseAuth reference
-        if (authService.isEmailVerified() || widget.isForgotPassword) {
-          if (widget.isForgotPassword) {
-            Navigator.pushReplacementNamed(context, '/new-password'); // Fixed route name
-          } else {
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              '/home',
-                  (route) => false,
-            );
-          }
-        } else {
-          setState(() {
-            _error = 'Email verification link not clicked yet.';
-          });
-        }
-      } else {
+      if (mounted) {
         setState(() {
+          _isLoading = false;
+        });
+
+        if (widget.isForgotPassword) {
+          // Navigate to reset password screen for forgot password flow
+          Navigator.pushReplacementNamed(context, '/reset-password');
+        } else {
+          // Navigate to home screen for signup flow
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/home',
+            (route) => false,
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
           _error = 'Invalid verification code. Please try again.';
         });
       }
@@ -123,28 +119,18 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
       _isLoading = true;
     });
 
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    final email = args?['email'] as String?;
-
     try {
-      // Instead of calling private _generateOTP, simulate resend logic
-      await FirebaseAuth.instance.currentUser?.sendEmailVerification(); // Fixed FirebaseAuth reference
-      final newOTP = authService.signUpWithEmail(email!, 'dummy_password', 'dummy_name').then((result) {
-        return result?['otp'] as String?; // Extract new OTP from AuthService (assuming it regenerates)
-      });
+      // Simulate API call
+      await Future.delayed(const Duration(seconds: 1));
 
       if (mounted) {
         setState(() {
           _isLoading = false;
           _showToast = true;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Verification code resent. Check your email.'),
-            backgroundColor: Colors.green,
-          ),
-        );
         _toastController.forward();
+
+        // Hide toast after 3 seconds
         Future.delayed(const Duration(seconds: 3), () {
           if (mounted) {
             _toastController.reverse().then((_) {
@@ -154,22 +140,12 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
             });
           }
         });
-        // Update arguments by navigating again (since settings.arguments is immutable)
-        Navigator.pushReplacementNamed(
-          context,
-          '/email-verification',
-          arguments: {
-            'email': email,
-            'isForgotPassword': widget.isForgotPassword,
-            'otp': await newOTP,
-          },
-        );
       }
     } catch (e) {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _error = 'Failed to resend code: $e';
+          _error = 'Failed to resend code. Please try again.';
         });
       }
     }
@@ -177,7 +153,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final email = args?['email'] as String? ?? '';
 
     return Scaffold(
@@ -194,7 +171,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
                     onTap: () => Navigator.pushNamedAndRemoveUntil(
                       context,
                       '/home',
-                          (route) => false,
+                      (route) => false,
                     ),
                     child: Row(
                       children: [
@@ -236,7 +213,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
                       ),
                       const SizedBox(width: 16),
                       Text(
-                        widget.isForgotPassword ? 'Reset Password' : 'Verify Email',
+                        widget.isForgotPassword
+                            ? 'Reset Password'
+                            : 'Verify Email',
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -258,7 +237,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
                   const SizedBox(height: 32),
                   if (_error != null)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 16), // Fixed typo 'bottom'
+                      padding: const EdgeInsets.only(bottom: 16),
                       child: Text(
                         _error!,
                         style: const TextStyle(
@@ -271,7 +250,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: List.generate(
                       6,
-                          (index) => SizedBox(
+                      (index) => SizedBox(
                         width: 50,
                         height: 56,
                         child: TextFormField(
@@ -294,7 +273,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(
-                                color: _error != null ? Colors.red : Colors.grey[200]!,
+                                color: _error != null
+                                    ? Colors.red
+                                    : Colors.grey[200]!,
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
@@ -354,20 +335,23 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
                       ),
                       child: _isLoading
                           ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      )
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
                           : Text(
-                        widget.isForgotPassword ? 'Reset Password' : 'Verify Email',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                              widget.isForgotPassword
+                                  ? 'Reset Password'
+                                  : 'Verify Email',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                     ),
                   ),
                 ],
