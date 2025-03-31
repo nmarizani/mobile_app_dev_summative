@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_event.dart';
+import '../../services/auth_service.dart'; // Import AuthService
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -18,25 +19,60 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  Future<void> _handleSignUp() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final authService = AuthService();
+    final result = await authService.signUpWithEmail(
+      _emailController.text,
+      _passwordController.text,
+    );
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (result != null && result.containsKey('user')) {
+        // Navigate to email verification with OTP
+        Navigator.pushNamed(
+          context,
+          '/email-verification',
+          arguments: {
+            'email': _emailController.text,
+            'isForgotPassword': false,
+            'otp': result['otp'], // Pass the OTP
+          },
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result?['error'] ?? 'Sign-up failed.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _handleGoogleSignIn() async {
     setState(() {
       _isLoading = true;
     });
 
     try {
-      // Simulate API call for Google Sign In
-      await Future.delayed(const Duration(seconds: 1));
-
-      if (mounted) {
-        context.read<AuthBloc>().add(
-              GoogleSignIn(),
-            );
-
-        // Navigate to home screen after successful sign in
+      final authService = AuthService();
+      final user = await authService.signInWithGoogle();
+      if (mounted && user != null) {
+        context.read<AuthBloc>().add(GoogleSignIn());
         Navigator.pushNamedAndRemoveUntil(
           context,
           '/home',
-          (route) => false,
+              (route) => false,
         );
       }
     } catch (e) {
@@ -234,25 +270,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        Navigator.pushNamed(
-                          context,
-                          '/email-verification',
-                          arguments: {
-                            'email': _emailController.text,
-                            'isForgotPassword': false,
-                          },
-                        );
-                      }
-                    },
+                    onPressed: _isLoading ? null : _handleSignUp,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
+                    child: _isLoading
+                        ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor:
+                        AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                        : const Text(
                       'Create Account',
                       style: TextStyle(
                         fontSize: 16,
@@ -296,19 +331,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     icon: _isLoading
                         ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.grey),
-                            ),
-                          )
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor:
+                        AlwaysStoppedAnimation<Color>(Colors.grey),
+                      ),
+                    )
                         : Image.asset(
-                            'assets/icons/google.png',
-                            width: 24,
-                            height: 24,
-                          ),
+                      'assets/icons/google.png',
+                      width: 24,
+                      height: 24,
+                    ),
                     label: const Text(
                       'Signup with Google',
                       style: TextStyle(
