@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'new_password_screen.dart';
+import 'profile_new_password_screen.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({Key? key}) : super(key: key);
@@ -152,7 +152,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const NewPasswordScreen(),
+                    builder: (context) => const ProfileNewPasswordScreen(),
                   ),
                 );
               }

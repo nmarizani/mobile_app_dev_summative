@@ -37,8 +37,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         });
         Navigator.pushNamed(
           context,
-          '/forgot-password-verification',
-          arguments: _emailController.text,
+          '/email-verification',
+          arguments: {
+            'email': _emailController.text,
+            'isForgotPassword': true,
+          },
         );
       }
     } catch (e) {

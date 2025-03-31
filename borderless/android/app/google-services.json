@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "278341916342",
+    "project_id": "borderless-31448",
+    "storage_bucket": "borderless-31448.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:278341916342:android:f42d4f6cddf5101e13f817",
+        "android_client_info": {
+          "package_name": "com.borderless.borderless"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApVPjh1bekCzrVuMq1zdl4IlNe55tu-oI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

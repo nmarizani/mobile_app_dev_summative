@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../auth/login_screen.dart';
-import '../auth/sign_up_screen.dart';
+import 'package:borderless/screens/auth/sign_up_screen.dart';
 import '../../blocs/theme/theme.dart';
 
 class OnboardingScreen extends StatefulWidget {
