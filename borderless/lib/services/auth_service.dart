@@ -8,6 +8,9 @@ class AuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // Getter for the current user
+  User? get currentUser => _auth.currentUser;
+
   // Generate a 6-digit OTP
   String _generateOTP() {
     Random random = Random();
@@ -85,7 +88,7 @@ class AuthService {
     }
   }
 
-  // Google Sign-In (Updated to return Map for consistency)
+  // Google Sign-In
   Future<Map<String, dynamic>?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -140,7 +143,7 @@ class AuthService {
     });
   }
 
-  // Sign Out (Updated to sign out from Google as well)
+  // Sign Out
   Future<void> signOut() async {
     await _googleSignIn.signOut(); // Sign out from Google
     await _auth.signOut(); // Sign out from Firebase
