@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_event.dart';
-import '../../services/auth_service.dart'; // Import AuthService
+import '../../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -53,6 +53,35 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         setState(() {
           _error = result?['error'] ?? 'Login failed.';
+        });
+      }
+    }
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    final authService = AuthService();
+    final result = await authService.signInWithGoogle();
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (result != null && result.containsKey('user')) {
+        context.read<AuthBloc>().add(GoogleSignIn());
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/home',
+              (route) => false,
+        );
+      } else {
+        setState(() {
+          _error = result?['error'] ?? 'Google Sign-In failed.';
         });
       }
     }
@@ -212,8 +241,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 24,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white),
+                            valueColor:
+                            AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         )
                             : const Text(
@@ -221,6 +250,43 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: OutlinedButton.icon(
+                        onPressed: _isLoading ? null : _handleGoogleSignIn,
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          side: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        icon: _isLoading
+                            ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor:
+                            AlwaysStoppedAnimation<Color>(Colors.grey),
+                          ),
+                        )
+                            : Image.asset(
+                          'assets/icons/google.png',
+                          width: 24,
+                          height: 24,
+                        ),
+                        label: const Text(
+                          'Login with Google',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
