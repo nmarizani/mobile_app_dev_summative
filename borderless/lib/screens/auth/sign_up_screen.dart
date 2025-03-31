@@ -64,31 +64,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _isLoading = true;
     });
 
-    try {
-      final authService = AuthService();
-      final user = await authService.signInWithGoogle();
-      if (mounted && user != null) {
+    final authService = AuthService();
+    final result = await authService.signInWithGoogle();
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (result != null && result.containsKey('user')) {
         context.read<AuthBloc>().add(GoogleSignIn());
         Navigator.pushNamedAndRemoveUntil(
           context,
           '/home',
               (route) => false,
         );
-      }
-    } catch (e) {
-      if (mounted) {
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to sign in with Google. Please try again.'),
+          SnackBar(
+            content: Text(result?['error'] ?? 'Failed to sign in with Google.'),
             backgroundColor: Colors.red,
           ),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
       }
     }
   }
