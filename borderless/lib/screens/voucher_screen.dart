@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import '../widgets/animated_widgets.dart';
-import 'screens/auth/login_screen.dart';
-import 'screens/auth/sign_up_screen.dart';
-import 'screens/auth/email_verification_screen.dart';
-import 'screens/auth/forgot_password_screen.dart';
-import 'screens/auth/forgot_password_verification_screen.dart';
-import 'screens/auth/new_password_screen.dart';
-import 'screens/auth/password_success_screen.dart';
+import 'auth/login_screen.dart';
+import 'auth/sign_up_screen.dart';
+import 'auth/email_verification_screen.dart';
+import 'auth/forgot_password_screen.dart';
+import 'auth/new_password_screen.dart';
+import 'auth/password_success_screen.dart';
 
 class VoucherCodes {
   static final Map<String, double> codes = {

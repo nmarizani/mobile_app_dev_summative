@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -118,6 +119,7 @@ class MyApp extends StatelessWidget {
               '/order-tracking': (context) {
                 final orderId = ModalRoute.of(context)!.settings.arguments as String;
                 return OrderTrackingScreen(orderId: orderId);
+                debugPaintSizeEnabled = true;
               },
             },
           );

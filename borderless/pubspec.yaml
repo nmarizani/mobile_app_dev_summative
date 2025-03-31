@@ -82,7 +82,6 @@ flutter:
     - assets/images/logo.png
     - assets/images/banner.png
     - assets/images/handbag.png
-    - assets/images/watch.png
     - assets/images/headphones1.png
     - assets/images/headphones2.png
     - assets/images/headphones3.png
@@ -91,7 +90,9 @@ flutter:
     - assets/images/headphones6.png
     - assets/images/watch1.png
     - assets/images/watch2.png
-    - assets/images/watch3.png
+    - assets/images/watch1-1.png
+    - assets/images/watch2-2.png
+    - assets/images/watch3-3.png
     - assets/images/nike_shoes.png
     - assets/images/glasses.png
     - assets/images/empty_orders.png
@@ -110,13 +111,13 @@ flutter:
     - assets/images/profile_image.png
     - assets/images/headphone1.png
     - assets/images/coffee_table.png
-    - assets/images/tool_set.png
     - assets/images/vase.png
+    - assets/images/loop_silicone.png
     
     # Subcategory images
     - assets/images/subcategories/smartphone.png
     - assets/images/subcategories/clothing.png
-    - assets/images/subcategories/sofa.png
+    - assets/images/subcategories/living_room.png
     - assets/images/subcategories/machinery.png
     - assets/images/subcategories/lighting.png
     - assets/images/subcategories/concrete.png
@@ -140,6 +141,7 @@ flutter:
     - assets/images/products/wiring_kit.png
     - assets/images/products/metal_saw.png
     - assets/images/products/welding_machine.png
+    - assets/images/products/loop_silicon.png
 
     - assets/icons/
     - assets/icons/electronics_tv.png

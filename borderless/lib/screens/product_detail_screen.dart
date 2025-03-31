@@ -29,10 +29,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int _selectedColorIndex = 0;
 
   final List<String> _productImages = [
-    'assets/images/products/loop_silicone.png',
-    'assets/images/watch1.png',
-    'assets/images/watch2.png',
-    'assets/images/watch3.png',
+    'assets/images/loop_silicone.png',
+    'assets/images/watch1-1.png',
+    'assets/images/watch2-2.png',
+    'assets/images/watch3-3.png',
   ];
 
   final List<Color> _availableColors = [
@@ -104,7 +104,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       name: widget.item,
       description: _generateDescription(),
       price: 15.25,
-      imageUrl: 'assets/images/products/loop_silicone.png',
+      imageUrl: 'assets/images/products/loop_silicon.png',
       category: widget.category,
       colors: _availableColors,
     );
@@ -115,7 +115,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             quantity: _quantity,
             selectedSize: 'One Size',
             selectedColor: _availableColors[_selectedColorIndex],
-            imageUrl: 'assets/images/products/loop_silicone.png',
+            imageUrl: 'assets/images/products/loop_silicon.png',
           ),
         );
 
@@ -128,7 +128,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       name: widget.item,
       description: _generateDescription(),
       price: 15.25,
-      imageUrl: 'assets/images/products/loop_silicone.png',
+      imageUrl: 'assets/images/products/loop_silicon.png',
       category: widget.category,
       colors: _availableColors,
     );
@@ -140,7 +140,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             quantity: _quantity,
             selectedSize: 'One Size',
             selectedColor: _availableColors[_selectedColorIndex],
-            imageUrl: 'assets/images/products/loop_silicone.png',
+            imageUrl: 'assets/images/products/loop_silicon.png',
           ),
         );
 
