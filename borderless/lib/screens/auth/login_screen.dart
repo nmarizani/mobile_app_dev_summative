@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_event.dart';
+import '../../services/auth_service.dart'; // Import AuthService
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,13 +19,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   String? _error;
 
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
   void _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -33,33 +27,42 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = null;
     });
 
-    try {
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 1));
+    final authService = AuthService();
+    final result = await authService.signInWithEmail(
+      _emailController.text,
+      _passwordController.text,
+    );
 
-      if (mounted) {
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (result != null && result.containsKey('user')) {
         context.read<AuthBloc>().add(
-              Login(
-                email: _emailController.text,
-                password: _passwordController.text,
-              ),
-            );
-
-        // Navigate to home screen after successful login
+          Login(
+            email: _emailController.text,
+            password: _passwordController.text,
+          ),
+        );
         Navigator.pushNamedAndRemoveUntil(
           context,
           '/home',
-          (route) => false,
+              (route) => false,
         );
-      }
-    } catch (e) {
-      if (mounted) {
+      } else {
         setState(() {
-          _isLoading = false;
-          _error = 'Invalid email or password';
+          _error = result?['error'] ?? 'Login failed.';
         });
       }
     }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -205,21 +208,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: _isLoading
                             ? const SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white),
-                                ),
-                              )
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white),
+                          ),
+                        )
                             : const Text(
-                                'Login',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                          'Login',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 24),
