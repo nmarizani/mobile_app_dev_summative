@@ -7,6 +7,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<Login>(_onLogin);
     on<Logout>(_onLogout);
     on<SignUp>(_onSignUp);
+    on<GoogleSignIn>(_onGoogleSignIn);
     on<CheckAuth>(_onCheckAuth);
   }
 
@@ -45,6 +46,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         userId: '1',
         name: event.name,
         email: event.email,
+      ));
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
+  void _onGoogleSignIn(GoogleSignIn event, Emitter<AuthState> emit) async {
+    emit(const AuthLoading());
+    try {
+      // TODO: Implement actual Google sign in logic
+      await Future.delayed(const Duration(seconds: 1));
+      emit(Authenticated(
+        userId: '1',
+        name: 'Google User',
+        email: 'google.user@example.com',
       ));
     } catch (e) {
       emit(AuthError(e.toString()));

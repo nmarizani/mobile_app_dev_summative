@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../widgets/animated_widgets.dart';
 import 'voucher_screen.dart';
-import 'shipping_address_screen.dart';
+import 'profile/profile_shipping_screen.dart';
 
 class MyCartPage extends StatefulWidget {
   final Map<String, int> cartItems;
@@ -41,7 +41,8 @@ class _MyCartPageState extends State<MyCartPage> {
 
   void updateQuantity(String product, int change) {
     setState(() {
-      widget.cartItems[product] = (widget.cartItems[product]! + change).clamp(0, 10);
+      widget.cartItems[product] =
+          (widget.cartItems[product]! + change).clamp(0, 10);
       if (widget.cartItems[product] == 0) {
         widget.cartItems.remove(product);
       }
@@ -68,16 +69,16 @@ class _MyCartPageState extends State<MyCartPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.shopping_cart, size: 80, color: Colors.grey),
+                          Icon(Icons.shopping_cart,
+                              size: 80, color: Colors.grey),
                           SizedBox(height: 10),
-                          Text("Your cart is empty!", style: TextStyle(fontSize: 18)),
+                          Text("Your cart is empty!",
+                              style: TextStyle(fontSize: 18)),
                           SizedBox(height: 10),
-                           ElevatedButton(
+                          ElevatedButton(
                             onPressed: () {},
                             child: Text("Explore Categories"),
                           ),
- 
-
                         ],
                       ),
                     )
@@ -89,7 +90,8 @@ class _MyCartPageState extends State<MyCartPage> {
                                 'assets/${product.toLowerCase().replaceAll(" ", "_")}.png',
                                 width: 50),
                             title: Text(product),
-                            subtitle: Text('\$${(widget.cartItems[product]! * 15.25).toStringAsFixed(2)}'),
+                            subtitle: Text(
+                                '\$${(widget.cartItems[product]! * 15.25).toStringAsFixed(2)}'),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -131,51 +133,60 @@ class _MyCartPageState extends State<MyCartPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Subtotal:', style: TextStyle(fontSize: 16)),
-                Text('\$${subtotal.toStringAsFixed(2)}', style: TextStyle(fontSize: 16)),
+                Text('\$${subtotal.toStringAsFixed(2)}',
+                    style: TextStyle(fontSize: 16)),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Discount:', style: TextStyle(fontSize: 16, color: Colors.green)),
-                Text('-\$${discount.toStringAsFixed(2)}', style: TextStyle(fontSize: 16, color: Colors.green)),
+                Text('Discount:',
+                    style: TextStyle(fontSize: 16, color: Colors.green)),
+                Text('-\$${discount.toStringAsFixed(2)}',
+                    style: TextStyle(fontSize: 16, color: Colors.green)),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Shipping Cost:', style: TextStyle(fontSize: 16)),
-                Text('\$${shippingCost.toStringAsFixed(2)}', style: TextStyle(fontSize: 16)),
+                Text('\$${shippingCost.toStringAsFixed(2)}',
+                    style: TextStyle(fontSize: 16)),
               ],
             ),
             Divider(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Total:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Text('\$${total.toStringAsFixed(2)}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text('Total:',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text('\$${total.toStringAsFixed(2)}',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ],
             ),
             SizedBox(height: 10),
             ElevatedButton(
-  onPressed: widget.cartItems.isEmpty
-      ? null
-      : () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ShippingAddressScreen()),
-          );
-        },
-  style: ElevatedButton.styleFrom(
-    minimumSize: Size(double.infinity, 50),
-    backgroundColor: Colors.green,
-  ),
-  child: Text(
-    'Checkout (${widget.cartItems.length})',
-    style: TextStyle(color: Colors.white),
-  ),
-),
-
+              onPressed: widget.cartItems.isEmpty
+                  ? null
+                  : () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const ProfileShippingScreen()),
+                      );
+                    },
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+                backgroundColor: Colors.green,
+              ),
+              child: Text(
+                'Checkout (${widget.cartItems.length})',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
           ],
         ),
       ),

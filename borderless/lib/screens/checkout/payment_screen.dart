@@ -1,330 +1,172 @@
 import 'package:flutter/material.dart';
-import '../../widgets/animated_widgets.dart';
-import 'review_screen.dart';
+import '../../widgets/checkout_stepper.dart';
+import '../../blocs/shipping/shipping_bloc.dart';
+import '../../blocs/shipping/shipping_state.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class PaymentScreen extends StatefulWidget {
-  const PaymentScreen({Key? key}) : super(key: key);
+class CheckoutPaymentScreen extends StatefulWidget {
+  const CheckoutPaymentScreen({super.key});
 
   @override
-  State<PaymentScreen> createState() => _PaymentScreenState();
+  State<CheckoutPaymentScreen> createState() => _CheckoutPaymentScreenState();
 }
 
-class _PaymentScreenState extends State<PaymentScreen> {
+class _CheckoutPaymentScreenState extends State<CheckoutPaymentScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _cardHolderController = TextEditingController();
   final _cardNumberController = TextEditingController();
-  final _expirationController = TextEditingController();
+  final _expiryController = TextEditingController();
   final _cvvController = TextEditingController();
-  int _selectedPaymentMethod = 0;
-
-  @override
-  void dispose() {
-    _cardHolderController.dispose();
-    _cardNumberController.dispose();
-    _expirationController.dispose();
-    _cvvController.dispose();
-    super.dispose();
-  }
-
-  Widget _buildProgressIndicator() {
-    return Row(
-      children: [
-        _buildProgressItem(
-          icon: Icons.local_shipping_outlined,
-          label: 'Shipping',
-          isDone: true,
-        ),
-        _buildProgressDivider(isActive: true),
-        _buildProgressItem(
-          icon: Icons.payment_outlined,
-          label: 'Payment',
-          isActive: true,
-        ),
-        _buildProgressDivider(isActive: false),
-        _buildProgressItem(
-          icon: Icons.check_circle_outline,
-          label: 'Review',
-          isActive: false,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildProgressItem({
-    required IconData icon,
-    required String label,
-    bool isActive = false,
-    bool isDone = false,
-  }) {
-    final color = isDone
-        ? const Color(0xFF00C566)
-        : isActive
-            ? const Color(0xFF00C566)
-            : Colors.grey[200];
-
-    return Expanded(
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              isDone ? Icons.check : icon,
-              color: isDone || isActive ? Colors.white : Colors.grey,
-              size: 20,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: isActive || isDone ? Colors.black : Colors.grey,
-              fontSize: 12,
-              fontWeight: isActive ? FontWeight.w500 : FontWeight.normal,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProgressDivider({required bool isActive}) {
-    return Container(
-      height: 1,
-      width: 30,
-      color: isActive ? const Color(0xFF00C566) : Colors.grey[300],
-      margin: const EdgeInsets.only(bottom: 24),
-    );
-  }
-
-  Widget _buildPaymentMethod({
-    required String image,
-    required String name,
-    required int index,
-  }) {
-    final isSelected = _selectedPaymentMethod == index;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedPaymentMethod = index;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE8FFF3) : Colors.grey[50],
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isSelected ? const Color(0xFF00C566) : Colors.grey[200]!,
-          ),
-        ),
-        child: Image.asset(
-          image,
-          height: 24,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required String label,
-    required TextEditingController controller,
-    required String? Function(String?) validator,
-    TextInputType? keyboardType,
-    String? hintText,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-                color: Colors.black87,
-              ),
-            ),
-            const Text(
-              ' *',
-              style: TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: controller,
-          validator: validator,
-          keyboardType: keyboardType,
-          style: const TextStyle(fontSize: 14),
-          decoration: InputDecoration(
-            hintText: hintText ?? 'Enter ${label.toLowerCase()}',
-            hintStyle: TextStyle(
-              color: Colors.grey[400],
-              fontSize: 14,
-            ),
-            filled: true,
-            fillColor: Colors.grey[50],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey[200]!),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey[200]!),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          ),
-        ),
-        const SizedBox(height: 16),
-      ],
-    );
-  }
+  final _nameController = TextEditingController();
+  String _selectedPaymentMethod = 'paypal';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        title: const Text('Checkout'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
         elevation: 0,
-        leading: ScaleOnTap(
-          onTap: () => Navigator.pop(context),
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.arrow_back, color: Colors.black),
-          ),
-        ),
-        title: const Text(
-          'Checkout',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: _buildProgressIndicator(),
-          ),
+          const CheckoutStepper(currentStep: 2),
           Expanded(
-            child: Form(
-              key: _formKey,
-              child: ListView(
-                padding: const EdgeInsets.all(16),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildPaymentMethod(
-                          image: 'assets/images/paypal.png',
-                          name: 'PayPal',
-                          index: 0,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildPaymentMethod(
-                          image: 'assets/images/google_pay.png',
-                          name: 'Google Pay',
-                          index: 1,
-                        ),
-                      ),
-                    ],
+                  _buildShippingAddress(),
+                  const SizedBox(height: 24),
+                  // PayPal Option
+                  _buildPaymentOption(
+                    'paypal',
+                    'PayPal',
+                    'assets/images/payment/paypal.png',
+                  ),
+                  const SizedBox(height: 16),
+                  // Google Pay Option
+                  _buildPaymentOption(
+                    'gpay',
+                    'Google Pay',
+                    'assets/images/payment/gpay.png',
                   ),
                   const SizedBox(height: 24),
-                  _buildTextField(
-                    label: 'Card Holder Name',
-                    controller: _cardHolderController,
-                    validator: (value) => value?.isEmpty ?? true
-                        ? 'Please enter card holder name'
-                        : null,
-                  ),
-                  _buildTextField(
-                    label: 'Card Number',
-                    controller: _cardNumberController,
-                    validator: (value) => value?.isEmpty ?? true
-                        ? 'Please enter card number'
-                        : null,
-                    keyboardType: TextInputType.number,
-                    hintText: '4111 1111 1111 1111',
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildTextField(
-                          label: 'Expiration',
-                          controller: _expirationController,
-                          validator: (value) => value?.isEmpty ?? true
-                              ? 'Please enter expiration'
-                              : null,
-                          hintText: 'MM/YY',
-                        ),
+                  if (_selectedPaymentMethod == 'credit_card') ...[
+                    TextFormField(
+                      controller: _cardNumberController,
+                      decoration: const InputDecoration(
+                        labelText: 'Card Number *',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.credit_card),
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildTextField(
-                          label: 'CVV',
-                          controller: _cvvController,
-                          validator: (value) => value?.isEmpty ?? true
-                              ? 'Please enter CVV'
-                              : null,
-                          keyboardType: TextInputType.number,
-                          hintText: '123',
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your card number';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _expiryController,
+                            decoration: const InputDecoration(
+                              labelText: 'MM/YY *',
+                              border: OutlineInputBorder(),
+                            ),
+                            keyboardType: TextInputType.number,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Required';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _cvvController,
+                            decoration: const InputDecoration(
+                              labelText: 'CVV *',
+                              border: OutlineInputBorder(),
+                            ),
+                            keyboardType: TextInputType.number,
+                            obscureText: true,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Required';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Card Holder Name *',
+                        border: OutlineInputBorder(),
                       ),
-                    ],
-                  ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter cardholder name';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
                 ],
               ),
             ),
           ),
           Container(
             padding: const EdgeInsets.all(16),
-            child: ScaleOnTap(
-              onTap: () {
-                if (_formKey.currentState?.validate() ?? false) {
-                  // Navigate to review screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ReviewScreen(),
-                    ),
-                  );
-                }
-              },
-              child: Container(
-                width: double.infinity,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -5),
                 ),
-                child: const Center(
-                  child: Text(
-                    'Continue',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+              ],
+            ),
+            child: SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_selectedPaymentMethod == 'credit_card') {
+                    if (_formKey.currentState!.validate()) {
+                      Navigator.pushNamed(context, '/checkout-review');
+                    }
+                  } else {
+                    Navigator.pushNamed(context, '/checkout-review');
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Continue',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -333,5 +175,126 @@ class _PaymentScreenState extends State<PaymentScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildShippingAddress() {
+    return BlocBuilder<ShippingBloc, ShippingState>(
+      builder: (context, state) {
+        final address = state.address;
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.grey[100],
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Shipping Address',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                address.fullName ?? '',
+                style: const TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                address.phoneNumber ?? '',
+                style: const TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${address.streetAddress ?? ''}, ${address.city ?? ''}, ${address.province ?? ''}, ${address.postalCode ?? ''}',
+                style: const TextStyle(fontSize: 14),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPaymentOption(String method, String title, String imagePath) {
+    final isSelected = _selectedPaymentMethod == method;
+
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _selectedPaymentMethod = method;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF21D4B4) : Colors.grey[300]!,
+            width: 2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Image.asset(
+              imagePath,
+              height: 32,
+              width: 32,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(width: 16),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const Spacer(),
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color:
+                      isSelected ? const Color(0xFF21D4B4) : Colors.grey[400]!,
+                  width: 2,
+                ),
+              ),
+              child: isSelected
+                  ? const Center(
+                      child: Icon(
+                        Icons.check,
+                        size: 16,
+                        color: Color(0xFF21D4B4),
+                      ),
+                    )
+                  : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _cardNumberController.dispose();
+    _expiryController.dispose();
+    _cvvController.dispose();
+    _nameController.dispose();
+    super.dispose();
   }
 }

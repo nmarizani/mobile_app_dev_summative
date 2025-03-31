@@ -25,46 +25,24 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
     required String label,
     required TextEditingController controller,
     required bool obscureText,
-    required VoidCallback onToggleVisibility,
-    String? Function(String?)? validator,
+    required Function(bool) onVisibilityChanged,
+    required String? Function(String?) validator,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-                color: Colors.black87,
-              ),
-            ),
-            const Text(
-              ' *',
-              style: TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.black87,
+          ),
         ),
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
           obscureText: obscureText,
-          validator: validator ??
-              (value) {
-                if (value?.isEmpty ?? true) {
-                  return 'Please enter your password';
-                }
-                if ((value?.length ?? 0) < 8) {
-                  return 'Password must be at least 8 characters';
-                }
-                return null;
-              },
-          style: const TextStyle(fontSize: 14),
+          validator: validator,
           decoration: InputDecoration(
             hintText: 'Enter your password',
             hintStyle: TextStyle(
@@ -89,17 +67,13 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             suffixIcon: IconButton(
               icon: Icon(
-                obscureText
-                    ? Icons.visibility_outlined
-                    : Icons.visibility_off_outlined,
-                color: Colors.grey[600],
-                size: 20,
+                obscureText ? Icons.visibility_off : Icons.visibility,
+                color: Colors.grey[400],
               ),
-              onPressed: onToggleVisibility,
+              onPressed: () => onVisibilityChanged(!obscureText),
             ),
           ),
         ),
-        const SizedBox(height: 16),
       ],
     );
   }
@@ -109,22 +83,11 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
-          icon: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-              size: 20,
-            ),
-          ),
         ),
         title: Row(
           children: [
@@ -142,7 +105,6 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
               style: TextStyle(
                 color: Colors.grey[600],
                 fontSize: 14,
-                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -171,22 +133,29 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
             ),
             const SizedBox(height: 32),
             _buildPasswordField(
-              label: 'Password',
+              label: 'Password*',
               controller: _passwordController,
               obscureText: _obscurePassword,
-              onToggleVisibility: () {
+              onVisibilityChanged: (value) {
                 setState(() {
-                  _obscurePassword = !_obscurePassword;
+                  _obscurePassword = value;
                 });
               },
+              validator: (value) {
+                if (value?.isEmpty ?? true) {
+                  return 'Please enter your password';
+                }
+                return null;
+              },
             ),
+            const SizedBox(height: 16),
             _buildPasswordField(
-              label: 'Confirm Password',
+              label: 'Confirm Password*',
               controller: _confirmPasswordController,
               obscureText: _obscureConfirmPassword,
-              onToggleVisibility: () {
+              onVisibilityChanged: (value) {
                 setState(() {
-                  _obscureConfirmPassword = !_obscureConfirmPassword;
+                  _obscureConfirmPassword = value;
                 });
               },
               validator: (value) {
@@ -199,37 +168,56 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                 return null;
               },
             ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    // Save new password
-                    Navigator.of(context).popUntil(
-                      (route) =>
-                          route.isFirst || route.settings.name == '/profile',
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          bottom: MediaQuery.of(context).padding.bottom + 16,
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: () {
+              if (_formKey.currentState?.validate() ?? false) {
+                // Show success dialog
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Success'),
+                    content: const Text(
+                        'Your password has been changed successfully.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context); // Close dialog
+                          Navigator.pop(context); // Go back to profile screen
+                        },
+                        child: const Text('OK'),
+                      ),
+                    ],
                   ),
-                ),
-                child: const Text(
-                  'Save',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
-          ],
+            child: const Text(
+              'Save',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
         ),
       ),
     );

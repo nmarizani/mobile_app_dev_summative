@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../blocs/auth/auth_bloc.dart';
+import '../../blocs/auth/auth_event.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -10,9 +13,49 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
+  bool _isLoading = false;
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  Future<void> _handleGoogleSignIn() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Simulate API call for Google Sign In
+      await Future.delayed(const Duration(seconds: 1));
+
+      if (mounted) {
+        context.read<AuthBloc>().add(
+              GoogleSignIn(),
+            );
+
+        // Navigate to home screen after successful sign in
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/home',
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to sign in with Google. Please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -237,20 +280,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   width: double.infinity,
                   height: 56,
                   child: OutlinedButton.icon(
-                    onPressed: () {
-                      // Handle Google sign in
-                    },
+                    onPressed: _isLoading ? null : _handleGoogleSignIn,
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                       side: BorderSide(color: Colors.grey[300]!),
                     ),
-                    icon: Image.asset(
-                      'assets/icons/google.png',
-                      width: 24,
-                      height: 24,
-                    ),
+                    icon: _isLoading
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.grey),
+                            ),
+                          )
+                        : Image.asset(
+                            'assets/icons/google.png',
+                            width: 24,
+                            height: 24,
+                          ),
                     label: const Text(
                       'Signup with Google',
                       style: TextStyle(

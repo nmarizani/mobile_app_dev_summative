@@ -1,55 +1,39 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equatable/equatable.dart';
+import '../../models/product.dart';
+import 'wishlist_event.dart';
+import 'wishlist_state.dart';
 
-// Event
-abstract class WishlistEvent extends Equatable {
-  @override
-  List<Object> get props => [];
-}
-
-class AddToWishlist extends WishlistEvent {
-  final Map<String, dynamic> product;
-
-  AddToWishlist(this.product);
-
-  @override
-  List<Object> get props => [product];
-}
-
-class RemoveFromWishlist extends WishlistEvent {
-  final String productName;
-
-  RemoveFromWishlist(this.productName);
-
-  @override
-  List<Object> get props => [productName];
-}
-
-// State
-class WishlistState extends Equatable {
-  final List<Map<String, dynamic>> wishlistItems;
-
-  const WishlistState(this.wishlistItems);
-
-  @override
-  List<Object> get props => [wishlistItems];
-}
-
-// BLoC
 class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
-  WishlistBloc() : super(const WishlistState([])) {
+  WishlistBloc() : super(const WishlistInitial()) {
     on<AddToWishlist>((event, emit) {
-      final updatedWishlist =
-          List<Map<String, dynamic>>.from(state.wishlistItems);
-      updatedWishlist.add(event.product);
-      emit(WishlistState(updatedWishlist));
+      try {
+        if (state is WishlistLoaded) {
+          final currentState = state as WishlistLoaded;
+          final List<Product> updatedItems =
+              List.from(currentState.items ?? []);
+          if (!updatedItems.contains(event.product)) {
+            updatedItems.add(event.product);
+          }
+          emit(WishlistLoaded(updatedItems));
+        } else {
+          emit(WishlistLoaded([event.product]));
+        }
+      } catch (e) {
+        emit(WishlistError(e.toString()));
+      }
     });
 
     on<RemoveFromWishlist>((event, emit) {
-      final updatedWishlist = state.wishlistItems
-          .where((item) => item['name'] != event.productName)
-          .toList();
-      emit(WishlistState(updatedWishlist));
+      try {
+        if (state is WishlistLoaded) {
+          final currentState = state as WishlistLoaded;
+          final List<Product> updatedItems = List.from(currentState.items ?? [])
+            ..removeWhere((item) => item.id == event.productId);
+          emit(WishlistLoaded(updatedItems));
+        }
+      } catch (e) {
+        emit(WishlistError(e.toString()));
+      }
     });
   }
 }

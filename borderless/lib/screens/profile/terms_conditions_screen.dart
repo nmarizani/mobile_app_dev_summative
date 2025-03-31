@@ -66,17 +66,8 @@ class TermsConditionsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Text(
-            'Terms & Conditions',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
-          ),
-          const SizedBox(height: 8),
           Text(
-            'Welcome to QuickMart! Please terms and conditions carefully. By using our services and making purchases, you agree to be bound by these terms. If you do not agree to these terms, please do not use our services.',
+            'Welcome to QuickMart! These Terms and Conditions ("Terms") govern your use of our e-commerce app. By accessing or using QuickMart, you agree to be bound by these Terms. Please read them carefully before proceeding.',
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[600],
@@ -87,66 +78,87 @@ class TermsConditionsScreen extends StatelessWidget {
           _buildSection(
             '1. Account Registration',
             [
-              '• You must register an account to use our app',
-              '• You are responsible for providing accurate and complete information',
-              '• Keep your account credentials secure',
-              '• You are solely responsible for all activities that occur under your account',
+              '• You must create an account to use certain features of QuickMart.',
+              '• You are responsible for providing accurate and up-to-date information during the registration process.',
+              '• You must safeguard your account credentials and notify us immediately of any unauthorized access or use of your account.',
             ],
           ),
           _buildSection(
             '2. Product Information and Pricing',
             [
-              '• We strive to display accurate product information',
-              '• Prices are subject to change without notice',
-              '• We reserve the right to modify product descriptions',
-              '• Product availability is not guaranteed',
+              '• QuickMart strives to provide accurate product descriptions, images, and pricing information.',
+              '• We reserve the right to modify product details and prices without prior notice.',
+              '• In the event of an error, we may cancel or refuse orders placed for incorrectly priced products.',
             ],
           ),
           _buildSection(
-            '3. Order Payment and Fulfillment',
+            '3. Order Placement and Fulfillment',
             [
-              '• By placing an order on QuickMart, you agree to pay the full amount specified',
-              '• We accept various payment methods',
-              '• Orders are subject to verification',
-              '• All payments are subject to verification and approval',
+              '• By placing an order on QuickMart, you agree to purchase the selected products at the stated price.',
+              '• We reserve the right to accept or reject any order, and we may cancel orders due to product unavailability, pricing errors, or suspected fraudulent activity.',
+              '• Once an order is confirmed, we will make reasonable efforts to fulfill and deliver it in a timely manner.',
             ],
           ),
           _buildSection(
-            '4. Shipping',
+            '4. Payment',
             [
-              '• Delivery times are estimates only',
-              '• Shipping costs are calculated based on location and order size',
-              '• We are not responsible for delays beyond our control',
+              '• QuickMart supports various payment methods, including credit/debit cards and online payment platforms.',
+              '• By providing payment information, you represent and warrant that you are authorized to use the chosen payment method.',
+              '• All payments are subject to verification and approval by relevant financial institutions.',
             ],
           ),
           _buildSection(
-            '5. Returns and Refunds',
+            '5. Shipping and Delivery',
             [
-              '• Return requests must be made within 7 days of delivery',
-              '• Items must be unused and in original packaging',
-              '• Refunds will be processed within 5-7 business days',
-              '• Shipping costs for returns are the responsibility of the customer',
+              '• QuickMart will make reasonable efforts to ensure timely delivery of products.',
+              '• Shipping times may vary based on factors beyond our control, such as location, weather conditions, or carrier delays.',
+              '• Risk of loss or damage to products passes to you upon delivery.',
             ],
           ),
           _buildSection(
-            '6. Intellectual Property',
+            '6. Returns and Refunds',
             [
-              'All content, trademarks, and other intellectual property on our platform are owned by QuickMart or its licensors.',
+              '• QuickMart\'s return and refund policies are outlined separately and govern the process for returning products and seeking refunds.',
+              '• Certain products may be non-returnable or subject to specific conditions.',
             ],
           ),
           _buildSection(
-            '7. Limitation of Liability',
+            '7. Intellectual Property',
             [
-              'QuickMart shall not be liable for any indirect, incidental, special, consequential, or punitive damages.',
+              '• QuickMart and its content, including logos, trademarks, text, images, and software, are protected by intellectual property rights.',
+              '• You may not use, reproduce, modify, distribute, or display any part of QuickMart without our prior written consent.',
             ],
           ),
           _buildSection(
-            '8. User Guidelines',
+            '8. User Conduct',
             [
-              '• You agree to use QuickMart in compliance with applicable laws',
-              '• You will not engage in any activity that disrupts our services',
-              '• You will not attempt to gain unauthorized access',
+              '• You agree to use QuickMart in compliance with applicable laws and regulations.',
+              '• You will not engage in any activity that disrupts or interferes with the functioning of QuickMart or infringes upon the rights of others.',
+              '• Any unauthorized use or attempt to access restricted areas or user accounts is strictly prohibited.',
             ],
+          ),
+          _buildSection(
+            '9. Limitation of Liability',
+            [
+              '• QuickMart and its affiliates shall not be liable for any direct, indirect, incidental, consequential, or punitive damages arising from the use or inability to use our app or any products purchased through it.',
+              '• We do not guarantee the accuracy, completeness, or reliability of information provided on QuickMart.',
+            ],
+          ),
+          _buildSection(
+            '10. Governing Law',
+            [
+              '• These Terms shall be governed by and construed in accordance with the laws of [Jurisdiction].',
+              '• Any disputes arising out of or relating to these Terms shall be resolved in the courts of [Jurisdiction].',
+            ],
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'If you have any questions or concerns regarding these Terms and Conditions, please contact our customer support. By using QuickMart, you acknowledge that you have read, understood, and agreed to these Terms and Conditions.',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[600],
+              height: 1.5,
+            ),
           ),
         ],
       ),

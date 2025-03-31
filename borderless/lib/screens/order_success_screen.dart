@@ -1,131 +1,180 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../blocs/checkout/checkout_bloc.dart';
-import '../blocs/checkout/checkout_state.dart';
-import '../utils/checkout_page_route.dart';
+import '../widgets/animated_widgets.dart';
 import 'order_tracking_screen.dart';
+import 'profile/order_history_screen.dart';
+import 'categories_screen.dart';
 
 class OrderSuccessScreen extends StatelessWidget {
-  const OrderSuccessScreen({super.key});
+  final String orderId;
+
+  const OrderSuccessScreen({
+    super.key,
+    required this.orderId,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'assets/images/order_success.png',
-                  width: 200,
-                  height: 200,
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Success Animation
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8FFF3),
+                  shape: BoxShape.circle,
                 ),
-                const SizedBox(height: 32),
-                const Text(
-                  'Your order has been placed successfully',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
+                child: const Icon(
+                  Icons.check_circle,
+                  color: Color(0xFF21D4B4),
+                  size: 60,
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  'Thank you for choosing us! You can track your order status below.',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey[600],
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 48),
-                BlocBuilder<CheckoutBloc, CheckoutState>(
-                  builder: (context, state) {
-                    if (state.orderTracking == null) {
-                      return const SizedBox.shrink();
-                    }
+              ),
+              const SizedBox(height: 32),
 
-                    return Column(
-                      children: [
-                        Text(
-                          'Order ID: ${state.orderTracking!.orderId}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 56,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                CheckoutPageRoute(
-                                  page: OrderTrackingScreen(
-                                    orderId: state.orderTracking!.orderId,
-                                  ),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF21D4B4),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            child: const Text(
-                              'Track Order',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
-                    );
-                  },
+              // Success Message
+              const Text(
+                'Order Placed Successfully!',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
                 ),
-                SizedBox(
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Your order has been confirmed and will be shipped within 2-4 business days.',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+
+              // Order Details Card
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.grey[200]!,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    _buildInfoRow(
+                      'Order Number',
+                      '#$orderId',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildInfoRow(
+                      'Estimated Delivery',
+                      '${DateTime.now().add(const Duration(days: 3)).day}/${DateTime.now().add(const Duration(days: 3)).month}/${DateTime.now().add(const Duration(days: 3)).year}',
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+
+              // Action Buttons
+              ScaleOnTap(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const OrderHistoryScreen(),
+                    ),
+                  );
+                },
+                child: Container(
                   width: double.infinity,
                   height: 56,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        '/home',
-                        (route) => false,
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.black),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text(
-                      'Continue Shopping',
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF21D4B4),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Track Order',
                       style: TextStyle(
+                        color: Colors.white,
                         fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 16),
+              ScaleOnTap(
+                onTap: () {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/home',
+                    (route) => false,
+                  ).then((_) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CategoriesScreen(),
+                      ),
+                    );
+                  });
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Continue Shopping',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[600],
+          ),
+        ),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 }

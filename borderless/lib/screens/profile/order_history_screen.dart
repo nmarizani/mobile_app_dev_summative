@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/bottom_nav_bar.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
   const OrderHistoryScreen({Key? key}) : super(key: key);
@@ -76,21 +77,24 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
         Text(
           isOngoing ? 'No ongoing order' : 'No completed order',
           style: const TextStyle(
-            fontSize: 20,
+            fontSize: 18,
             fontWeight: FontWeight.w600,
             color: Colors.black,
           ),
         ),
         const SizedBox(height: 8),
-        Text(
-          isOngoing
-              ? 'We currently don\'t have any active orders in progress. Feel free to explore our products and place a new order.'
-              : 'You haven\'t completed any orders yet. Start shopping now and explore our products.',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[600],
-            height: 1.5,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40),
+          child: Text(
+            isOngoing
+                ? 'We currently don\'t have any active orders in progress. Feel free to explore our products and place a new order.'
+                : 'We don\'t have any past orders that have been completed. Start shopping now and create your first order with us.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[600],
+              height: 1.5,
+            ),
           ),
         ),
         const SizedBox(height: 24),
@@ -98,13 +102,13 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: SizedBox(
             width: double.infinity,
-            height: 50,
             child: ElevatedButton(
               onPressed: () {
                 // Navigate to categories
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -127,39 +131,33 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
   Widget _buildOrderItem(Map<String, dynamic> order, bool isOngoing) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (isOngoing)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
-                color: Colors.red[50],
-                borderRadius: BorderRadius.circular(6),
+                color: const Color(0xFFFFE8E8),
+                borderRadius: BorderRadius.circular(8),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.access_time, size: 14, color: Colors.red[400]),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Estimated time: ${order['estimatedTime']}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.red[400],
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
+              child: Text(
+                'Estimated time: ${order['estimatedTime']}',
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFFFF4B4B),
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
@@ -188,103 +186,100 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                         Text(
                           '\$${order['price'].toStringAsFixed(2)}',
                           style: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF00C566),
+                            color: Color(0xFF21D4B4),
                           ),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           '\$${order['originalPrice'].toStringAsFixed(2)}',
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: Colors.grey[400],
                             decoration: TextDecoration.lineThrough,
                           ),
                         ),
                       ],
                     ),
+                    if (!isOngoing) ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE8F3FF),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Text(
+                              'Finished',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF2E7DFF),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            order['date'],
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[400],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),
-              Row(
-                children: [
-                  if (!isOngoing)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      margin: const EdgeInsets.only(right: 8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF00C566).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Text(
-                        'Finished',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF00C566),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        if (isOngoing)
-                          GestureDetector(
-                            onTap: () {
-                              // Decrease quantity
-                            },
-                            child: Icon(
-                              Icons.remove,
-                              size: 16,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Text(
-                            order['quantity'].toString(),
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        if (isOngoing)
-                          GestureDetector(
-                            onTap: () {
-                              // Increase quantity
-                            },
-                            child: Icon(
-                              Icons.add,
-                              size: 16,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
-          if (!isOngoing)
+          if (isOngoing)
             Padding(
               padding: const EdgeInsets.only(top: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text(
-                    order['date'],
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[400],
+                  GestureDetector(
+                    onTap: () {
+                      // Decrease quantity
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.remove, size: 16),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      '${order['quantity']}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // Increase quantity
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.add, size: 16),
                     ),
                   ),
                 ],
@@ -298,9 +293,9 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
@@ -325,59 +320,97 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
             fontWeight: FontWeight.w600,
           ),
         ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(48),
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              indicator: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.grey[600],
-              labelStyle: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-              tabs: const [
-                Tab(text: 'Ongoing'),
-                Tab(text: 'Completed'),
+      ),
+      body: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            color: Colors.white,
+            child: Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => _tabController.animateTo(0),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: _tabController.index == 0
+                            ? Colors.black
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Text(
+                        'Ongoing',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: _tabController.index == 0
+                              ? Colors.white
+                              : Colors.grey[600],
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => _tabController.animateTo(1),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: _tabController.index == 1
+                            ? Colors.black
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Text(
+                        'Completed',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: _tabController.index == 1
+                              ? Colors.white
+                              : Colors.grey[600],
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          // Ongoing Orders Tab
-          _ongoingOrders.isEmpty
-              ? _buildEmptyState(isOngoing: true)
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _ongoingOrders.length,
-                  itemBuilder: (context, index) {
-                    return _buildOrderItem(_ongoingOrders[index], true);
-                  },
-                ),
-          // Completed Orders Tab
-          _completedOrders.isEmpty
-              ? _buildEmptyState(isOngoing: false)
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _completedOrders.length,
-                  itemBuilder: (context, index) {
-                    return _buildOrderItem(_completedOrders[index], false);
-                  },
-                ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _ongoingOrders.isEmpty
+                    ? _buildEmptyState(isOngoing: true)
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: _ongoingOrders.length,
+                        itemBuilder: (context, index) {
+                          return _buildOrderItem(_ongoingOrders[index], true);
+                        },
+                      ),
+                _completedOrders.isEmpty
+                    ? _buildEmptyState(isOngoing: false)
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: _completedOrders.length,
+                        itemBuilder: (context, index) {
+                          return _buildOrderItem(
+                              _completedOrders[index], false);
+                        },
+                      ),
+              ],
+            ),
+          ),
         ],
       ),
+      bottomNavigationBar: const BottomNavBar(currentIndex: 4),
     );
   }
 }

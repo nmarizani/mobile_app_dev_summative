@@ -37,4 +37,6 @@ class SignUp extends AuthEvent {
   List<Object> get props => [email, password, name];
 }
 
+class GoogleSignIn extends AuthEvent {}
+
 class CheckAuth extends AuthEvent {}

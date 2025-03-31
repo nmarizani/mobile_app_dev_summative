@@ -23,32 +23,23 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(
-              'Password',
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-                color: Colors.black87,
-              ),
-            ),
-            const Text(
-              ' *',
-              style: TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+        Text(
+          'Password*',
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.black87,
+          ),
         ),
         const SizedBox(height: 8),
         TextFormField(
           controller: _passwordController,
           obscureText: _obscurePassword,
-          validator: (value) =>
-              value?.isEmpty ?? true ? 'Please enter your password' : null,
-          style: const TextStyle(fontSize: 14),
+          validator: (value) {
+            if (value?.isEmpty ?? true) {
+              return 'Please enter your password';
+            }
+            return null;
+          },
           decoration: InputDecoration(
             hintText: 'Enter your password',
             hintStyle: TextStyle(
@@ -73,11 +64,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             suffixIcon: IconButton(
               icon: Icon(
-                _obscurePassword
-                    ? Icons.visibility_outlined
-                    : Icons.visibility_off_outlined,
-                color: Colors.grey[600],
-                size: 20,
+                _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                color: Colors.grey[400],
               ),
               onPressed: () {
                 setState(() {
@@ -96,22 +84,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
-          icon: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-              size: 20,
-            ),
-          ),
         ),
         title: Row(
           children: [
@@ -129,7 +106,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               style: TextStyle(
                 color: Colors.grey[600],
                 fontSize: 14,
-                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -158,38 +134,44 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ),
             const SizedBox(height: 32),
             _buildPasswordField(),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const NewPasswordScreen(),
-                      ),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          bottom: MediaQuery.of(context).padding.bottom + 16,
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: () {
+              if (_formKey.currentState?.validate() ?? false) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NewPasswordScreen(),
                   ),
-                ),
-                child: const Text(
-                  'Continue',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
-          ],
+            child: const Text(
+              'Continue',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
         ),
       ),
     );

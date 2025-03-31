@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-import '../../widgets/animated_widgets.dart';
-import 'payment_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../widgets/checkout_stepper.dart';
+import '../../blocs/shipping/shipping_bloc.dart';
+import '../../blocs/shipping/shipping_event.dart';
+import '../../blocs/shipping/shipping_state.dart';
 
-class ShippingScreen extends StatefulWidget {
-  const ShippingScreen({Key? key}) : super(key: key);
+class CheckoutShippingScreen extends StatefulWidget {
+  const CheckoutShippingScreen({super.key});
 
   @override
-  State<ShippingScreen> createState() => _ShippingScreenState();
+  State<CheckoutShippingScreen> createState() => _CheckoutShippingScreenState();
 }
 
-class _ShippingScreenState extends State<ShippingScreen> {
+class _CheckoutShippingScreenState extends State<CheckoutShippingScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -17,6 +20,394 @@ class _ShippingScreenState extends State<ShippingScreen> {
   final _postalCodeController = TextEditingController();
   String? _selectedProvince;
   String? _selectedCity;
+  String _selectedCountry = 'Kenya';
+
+  // Map of African countries with their country codes and flag emojis
+  final Map<String, Map<String, String>> _countries = {
+    'Kenya': {'code': '+254', 'flag': '🇰🇪'},
+    'Nigeria': {'code': '+234', 'flag': '🇳🇬'},
+    'South Africa': {'code': '+27', 'flag': '🇿🇦'},
+    'Egypt': {'code': '+20', 'flag': '🇪🇬'},
+    'Morocco': {'code': '+212', 'flag': '🇲🇦'},
+    'Ghana': {'code': '+233', 'flag': '🇬🇭'},
+    'Tanzania': {'code': '+255', 'flag': '🇹🇿'},
+    'Ethiopia': {'code': '+251', 'flag': '🇪🇹'},
+    'Uganda': {'code': '+256', 'flag': '🇺🇬'},
+    'Algeria': {'code': '+213', 'flag': '🇩🇿'},
+  };
+
+  // Map of provinces/regions for each country
+  final Map<String, List<String>> _provinces = {
+    'Kenya': [
+      'Nairobi',
+      'Coast',
+      'Central',
+      'Eastern',
+      'North Eastern',
+      'Nyanza',
+      'Rift Valley',
+      'Western'
+    ],
+    'Nigeria': [
+      'Lagos',
+      'Abuja FCT',
+      'Rivers',
+      'Kano',
+      'Oyo',
+      'Delta',
+      'Kaduna',
+      'Ogun'
+    ],
+    'South Africa': [
+      'Gauteng',
+      'Western Cape',
+      'KwaZulu-Natal',
+      'Eastern Cape',
+      'Free State',
+      'Mpumalanga',
+      'North West',
+      'Limpopo',
+      'Northern Cape'
+    ],
+    'Egypt': [
+      'Cairo',
+      'Alexandria',
+      'Giza',
+      'Qalyubia',
+      'Gharbia',
+      'Dakahlia',
+      'Sharqia',
+      'Beheira'
+    ],
+    'Morocco': [
+      'Casablanca-Settat',
+      'Rabat-Salé-Kénitra',
+      'Tangier-Tetouan-Al Hoceima',
+      'Fès-Meknès',
+      'Marrakesh-Safi',
+      'Oriental',
+      'Béni Mellal-Khénifra'
+    ],
+  };
+
+  // Map of major cities for each province
+  final Map<String, List<String>> _cities = {
+    'Nairobi': ['Nairobi CBD', 'Westlands', 'Karen', 'Eastleigh', 'Kasarani'],
+    'Coast': ['Mombasa', 'Malindi', 'Kilifi', 'Lamu', 'Diani'],
+    'Central': ['Nyeri', 'Kiambu', 'Thika', 'Muranga', 'Kerugoya'],
+    'Lagos': ['Ikeja', 'Victoria Island', 'Lekki', 'Surulere', 'Yaba'],
+    'Abuja FCT': ['Central Area', 'Garki', 'Wuse', 'Maitama', 'Asokoro'],
+    'Gauteng': ['Johannesburg', 'Pretoria', 'Soweto', 'Centurion', 'Sandton'],
+    'Western Cape': [
+      'Cape Town',
+      'Stellenbosch',
+      'Paarl',
+      'George',
+      'Worcester'
+    ],
+    'Cairo': ['Maadi', 'Heliopolis', 'Zamalek', 'Nasr City', 'Downtown'],
+    'Alexandria': ['Montaza', 'Sidi Gaber', 'Mansheya', 'Miami', 'Agami'],
+    'Casablanca-Settat': [
+      'Casablanca',
+      'Mohammedia',
+      'Settat',
+      'Berrechid',
+      'Benslimane'
+    ],
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ShippingBloc>().add(LoadSavedAddress());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final address = context.read<ShippingBloc>().state.address;
+    _nameController.text = address.fullName ?? '';
+    _phoneController.text = address.phoneNumber ?? '';
+    _streetController.text = address.streetAddress ?? '';
+    _postalCodeController.text = address.postalCode ?? '';
+    _selectedProvince = address.province;
+    _selectedCity = address.city;
+  }
+
+  void _saveAddress() {
+    if (_formKey.currentState!.validate()) {
+      final address = ShippingAddress(
+        fullName: _nameController.text,
+        phoneNumber: _phoneController.text,
+        province: _selectedProvince,
+        city: _selectedCity,
+        streetAddress: _streetController.text,
+        postalCode: _postalCodeController.text,
+      );
+
+      context.read<ShippingBloc>().add(UpdateShippingAddress(address));
+      Navigator.pushNamed(context, '/checkout-payment');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final countryData = _countries[_selectedCountry]!;
+    final provinces = _provinces[_selectedCountry] ?? [];
+    final cities =
+        _selectedProvince != null ? _cities[_selectedProvince] ?? [] : [];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Checkout'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0,
+      ),
+      body: BlocBuilder<ShippingBloc, ShippingState>(
+        builder: (context, state) {
+          if (state.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state.error != null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    state.error!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      context.read<ShippingBloc>().add(LoadSavedAddress());
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return Column(
+            children: [
+              const CheckoutStepper(currentStep: 1),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextFormField(
+                          controller: _nameController,
+                          decoration: const InputDecoration(
+                            labelText: 'Full Name *',
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your name';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          value: _selectedCountry,
+                          decoration: const InputDecoration(
+                            labelText: 'Country *',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: _countries.keys.map((String country) {
+                            final data = _countries[country]!;
+                            return DropdownMenuItem<String>(
+                              value: country,
+                              child: Row(
+                                children: [
+                                  Text(data['flag']!),
+                                  const SizedBox(width: 8),
+                                  Text(country),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              setState(() {
+                                _selectedCountry = newValue;
+                                _selectedProvince = null;
+                                _selectedCity = null;
+                              });
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _phoneController,
+                          decoration: InputDecoration(
+                            labelText: 'Phone Number *',
+                            border: const OutlineInputBorder(),
+                            prefixIcon: Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(countryData['flag']!),
+                                  const SizedBox(width: 8),
+                                  Text(countryData['code']!),
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    width: 1,
+                                    height: 24,
+                                    color: Colors.grey[300],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your phone number';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          value: _selectedProvince,
+                          decoration: const InputDecoration(
+                            labelText: 'Province/Region *',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: provinces.map<DropdownMenuItem<String>>(
+                              (dynamic province) {
+                            return DropdownMenuItem<String>(
+                              value: province as String,
+                              child: Text(province as String),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              _selectedProvince = newValue;
+                              _selectedCity = null;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a province/region';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          value: _selectedCity,
+                          decoration: const InputDecoration(
+                            labelText: 'City *',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: cities
+                              .map<DropdownMenuItem<String>>((dynamic city) {
+                            return DropdownMenuItem<String>(
+                              value: city as String,
+                              child: Text(city as String),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              _selectedCity = newValue;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a city';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _streetController,
+                          decoration: const InputDecoration(
+                            labelText: 'Street Address *',
+                            border: OutlineInputBorder(),
+                          ),
+                          maxLines: 2,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your address';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _postalCodeController,
+                          decoration: const InputDecoration(
+                            labelText: 'Postal Code *',
+                            border: OutlineInputBorder(),
+                          ),
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your postal code';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, -5),
+                    ),
+                  ],
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _saveAddress,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -25,346 +416,5 @@ class _ShippingScreenState extends State<ShippingScreen> {
     _streetController.dispose();
     _postalCodeController.dispose();
     super.dispose();
-  }
-
-  Widget _buildProgressIndicator() {
-    return Row(
-      children: [
-        _buildProgressItem(
-          icon: Icons.local_shipping_outlined,
-          label: 'Shipping',
-          isActive: true,
-        ),
-        _buildProgressDivider(isActive: true),
-        _buildProgressItem(
-          icon: Icons.payment_outlined,
-          label: 'Payment',
-          isActive: false,
-        ),
-        _buildProgressDivider(isActive: false),
-        _buildProgressItem(
-          icon: Icons.check_circle_outline,
-          label: 'Review',
-          isActive: false,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildProgressItem({
-    required IconData icon,
-    required String label,
-    required bool isActive,
-  }) {
-    return Expanded(
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: isActive ? const Color(0xFF00C566) : Colors.grey[200],
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              color: isActive ? Colors.white : Colors.grey,
-              size: 20,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: isActive ? Colors.black : Colors.grey,
-              fontSize: 12,
-              fontWeight: isActive ? FontWeight.w500 : FontWeight.normal,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProgressDivider({required bool isActive}) {
-    return Container(
-      height: 1,
-      width: 30,
-      color: isActive ? const Color(0xFF00C566) : Colors.grey[300],
-      margin: const EdgeInsets.only(bottom: 24),
-    );
-  }
-
-  Widget _buildTextField({
-    required String label,
-    required TextEditingController controller,
-    required String? Function(String?) validator,
-    TextInputType? keyboardType,
-    Widget? prefix,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-                color: Colors.black87,
-              ),
-            ),
-            const Text(
-              ' *',
-              style: TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: controller,
-          validator: validator,
-          keyboardType: keyboardType,
-          style: const TextStyle(fontSize: 14),
-          decoration: InputDecoration(
-            hintText: 'Enter ${label.toLowerCase()}',
-            hintStyle: TextStyle(
-              color: Colors.grey[400],
-              fontSize: 14,
-            ),
-            filled: true,
-            fillColor: Colors.grey[50],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey[200]!),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey[200]!),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            prefixIcon: prefix,
-          ),
-        ),
-        const SizedBox(height: 16),
-      ],
-    );
-  }
-
-  Widget _buildDropdown({
-    required String label,
-    required String? value,
-    required List<String> items,
-    required void Function(String?) onChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const Text(
-              ' *',
-              style: TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: DropdownButtonFormField<String>(
-            value: value,
-            items: items
-                .map((item) => DropdownMenuItem(
-                      value: item,
-                      child: Text(item),
-                    ))
-                .toList(),
-            onChanged: onChanged,
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-            ),
-            validator: (value) =>
-                value == null ? 'Please select ${label.toLowerCase()}' : null,
-          ),
-        ),
-        const SizedBox(height: 16),
-      ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: ScaleOnTap(
-          onTap: () => Navigator.pop(context),
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.arrow_back, color: Colors.black),
-          ),
-        ),
-        title: const Text(
-          'Checkout',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: _buildProgressIndicator(),
-          ),
-          Expanded(
-            child: Form(
-              key: _formKey,
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  _buildTextField(
-                    label: 'Full Name',
-                    controller: _nameController,
-                    validator: (value) => value?.isEmpty ?? true
-                        ? 'Please enter your name'
-                        : null,
-                  ),
-                  _buildTextField(
-                    label: 'Phone Number',
-                    controller: _phoneController,
-                    validator: (value) => value?.isEmpty ?? true
-                        ? 'Please enter phone number'
-                        : null,
-                    keyboardType: TextInputType.phone,
-                    prefix: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Image.asset(
-                            'assets/images/pk_flag.png',
-                            width: 24,
-                            height: 16,
-                          ),
-                          const SizedBox(width: 4),
-                          const Text('+92'),
-                          const SizedBox(width: 4),
-                          Container(
-                            width: 1,
-                            height: 24,
-                            color: Colors.grey[300],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  _buildDropdown(
-                    label: 'Province',
-                    value: _selectedProvince,
-                    items: const ['Sindh', 'Punjab', 'KPK', 'Balochistan'],
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedProvince = value;
-                        _selectedCity =
-                            null; // Reset city when province changes
-                      });
-                    },
-                  ),
-                  _buildDropdown(
-                    label: 'City',
-                    value: _selectedCity,
-                    items: _selectedProvince == 'Sindh'
-                        ? const ['Karachi', 'Hyderabad', 'Sukkur']
-                        : const ['Select Province First'],
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedCity = value;
-                      });
-                    },
-                  ),
-                  _buildTextField(
-                    label: 'Street Address',
-                    controller: _streetController,
-                    validator: (value) => value?.isEmpty ?? true
-                        ? 'Please enter street address'
-                        : null,
-                  ),
-                  _buildTextField(
-                    label: 'Postal Code',
-                    controller: _postalCodeController,
-                    validator: (value) => value?.isEmpty ?? true
-                        ? 'Please enter postal code'
-                        : null,
-                    keyboardType: TextInputType.number,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: ScaleOnTap(
-              onTap: () {
-                if (_formKey.currentState?.validate() ?? false) {
-                  // Navigate to payment screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PaymentScreen(),
-                    ),
-                  );
-                }
-              },
-              child: Container(
-                width: double.infinity,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Save',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

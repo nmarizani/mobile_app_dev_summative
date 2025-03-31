@@ -13,8 +13,9 @@ import 'exclusive_sales_screen.dart';
 import 'auth/sign_up_screen.dart';
 import 'cart_screen.dart';
 import 'wishlist_screen.dart';
-import 'profile_screen.dart';
+import 'profile/profile_screen.dart';
 import '../widgets/logo.dart';
+import 'product_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -167,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Logo(size: 28),
-        centerTitle: true,
+        centerTitle: false,
         elevation: 0,
         backgroundColor: Colors.white,
         actions: [
@@ -180,7 +181,10 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black),
             onPressed: () {
-              // TODO: Navigate to cart
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CartScreen()),
+              );
             },
           ),
           IconButton(
@@ -194,239 +198,286 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // Banner Section
-          AspectRatio(
-            aspectRatio: 1.5,
-            child: Stack(
-              children: [
-                PageView.builder(
-                  itemCount: _banners.length,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentBanner = index;
-                    });
-                  },
-                  itemBuilder: (context, index) {
-                    final banner = _banners[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const ExclusiveSalesScreen()),
-                        );
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          image: DecorationImage(
-                            image: AssetImage(banner['image']!),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Banner Section
+            AspectRatio(
+              aspectRatio: 1.5,
+              child: Stack(
+                children: [
+                  PageView.builder(
+                    itemCount: _banners.length,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _currentBanner = index;
+                      });
+                    },
+                    itemBuilder: (context, index) {
+                      final banner = _banners[index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const ExclusiveSalesScreen()),
+                          );
+                        },
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Colors.black.withOpacity(0.6),
-                                Colors.black.withOpacity(0.3),
+                            image: DecorationImage(
+                              image: AssetImage(banner['image']!),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.black.withOpacity(0.6),
+                                  Colors.black.withOpacity(0.3),
+                                ],
+                              ),
+                            ),
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  banner['title']!,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  banner['subtitle']!,
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.8),
+                                    fontSize: 16,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                banner['title']!,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                banner['subtitle']!,
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.8),
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-                Positioned(
-                  bottom: 16,
-                  right: 16,
-                  child: Row(
-                    children: List.generate(
-                      _banners.length,
-                      (index) => Container(
-                        width: 8,
-                        height: 8,
-                        margin: const EdgeInsets.only(left: 4),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: _currentBanner == index
-                              ? const Color(0xFF21D4B4)
-                              : Colors.white.withOpacity(0.5),
+                      );
+                    },
+                  ),
+                  Positioned(
+                    bottom: 16,
+                    right: 16,
+                    child: Row(
+                      children: List.generate(
+                        _banners.length,
+                        (index) => Container(
+                          width: 8,
+                          height: 8,
+                          margin: const EdgeInsets.only(left: 4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: _currentBanner == index
+                                ? const Color(0xFF21D4B4)
+                                : Colors.white.withOpacity(0.5),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 24),
-
-          // Categories Section
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Categories',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const CategoriesScreen()),
-                  );
-                },
-                child: const Text('See All'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 120,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: _categories.length,
-              itemBuilder: (context, index) {
-                final category = _categories[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProductListingScreen(
-                          categoryId: category.id,
-                          subcategoryId: '',
-                          title: category.name,
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Categories Section
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Categories',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    );
-                  },
-                  child: Container(
-                    width: 100,
-                    margin: const EdgeInsets.only(right: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          category.imageUrl,
-                          width: 48,
-                          height: 48,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          category.name,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const CategoriesScreen()),
+                          );
+                        },
+                        child: const Text('See All'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 120,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _categories.length,
+                      itemBuilder: (context, index) {
+                        final category = _categories[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProductListingScreen(
+                                  categoryId: category.id,
+                                  subcategoryId: '',
+                                  title: category.name,
+                                  products: _latestProducts
+                                      .map((product) => {
+                                            'name': product.name,
+                                            'price': product.price,
+                                            'oldPrice': product.oldPrice,
+                                            'image': product.imageUrl,
+                                            'description': product.description,
+                                            'specs': [
+                                              'Specification 1',
+                                              'Specification 2',
+                                              'Specification 3'
+                                            ],
+                                          })
+                                      .toList(),
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            width: 100,
+                            margin: const EdgeInsets.only(right: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  category.imageUrl,
+                                  width: 48,
+                                  height: 48,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  category.name,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                        );
+                      },
                     ),
                   ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-          // Latest Products Section
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Latest Products',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ProductListingScreen(
-                        categoryId: 'all',
-                        subcategoryId: '',
-                        title: 'Latest Products',
+                  // Latest Products Section
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Latest Products',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProductListingScreen(
+                                categoryId: 'all',
+                                subcategoryId: '',
+                                title: 'Latest Products',
+                                products: _latestProducts
+                                    .map((product) => {
+                                          'name': product.name,
+                                          'price': product.price,
+                                          'oldPrice': product.oldPrice,
+                                          'image': product.imageUrl,
+                                          'description': product.description,
+                                          'specs': [
+                                            'Specification 1',
+                                            'Specification 2',
+                                            'Specification 3'
+                                          ],
+                                        })
+                                    .toList(),
+                              ),
+                            ),
+                          );
+                        },
+                        child: const Text('See All'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 16,
+                      childAspectRatio: 0.85,
                     ),
-                  );
-                },
-                child: const Text('See All'),
+                    itemCount: _latestProducts.length,
+                    itemBuilder: (context, index) {
+                      final product = _latestProducts[index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProductDetailScreen(
+                                category: product.category,
+                                subcategory: '',
+                                item: product.name,
+                              ),
+                            ),
+                          );
+                        },
+                        child: _buildProductCard(product),
+                      );
+                    },
+                  ),
+                ],
               ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 0.75,
             ),
-            itemCount: _latestProducts.length,
-            itemBuilder: (context, index) {
-              final product = _latestProducts[index];
-              return GestureDetector(
-                onTap: () {
-                  // TODO: Navigate to product detail
-                },
-                child: _buildProductCard(product),
-              );
-            },
-          ),
-        ],
+          ],
+        ),
       ),
       bottomNavigationBar: const BottomNavBar(currentIndex: 0),
     );
@@ -448,11 +499,11 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Stack(
-            children: [
-              AspectRatio(
-                aspectRatio: 1,
-                child: Container(
+          Expanded(
+            flex: 3,
+            child: Stack(
+              children: [
+                Container(
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(12),
@@ -463,130 +514,100 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-              ),
-              Positioned(
-                top: 8,
-                right: 8,
-                child: IconButton(
-                  icon: Icon(
-                    _favoriteStates[product.id] ?? false
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                    color: _favoriteStates[product.id] ?? false
-                        ? Colors.red
-                        : Colors.grey,
-                  ),
-                  onPressed: () => _toggleFavorite(product.id),
-                ),
-              ),
-              if (product.discountPercentage != null)
                 Positioned(
                   top: 8,
-                  left: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
+                  right: 8,
+                  child: IconButton(
+                    icon: Icon(
+                      _favoriteStates[product.id] ?? false
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color: _favoriteStates[product.id] ?? false
+                          ? Colors.red
+                          : Colors.grey,
                     ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF21D4B4),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      '-${product.discountPercentage}%',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    onPressed: () => _toggleFavorite(product.id),
                   ),
                 ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  product.name,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (product.discountPercentage != null) ...[
-                          Text(
-                            '\$${product.price.toStringAsFixed(2)}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              decoration: TextDecoration.lineThrough,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                        ],
-                        Text(
-                          '\$${(product.price * (1 - (product.discountPercentage ?? 0) / 100)).toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF21D4B4),
-                          ),
-                        ),
-                      ],
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Add to cart logic
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('${product.name} added to cart'),
-                            action: SnackBarAction(
-                              label: 'View Cart',
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const CartScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
+                if (product.discountPercentage != null)
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
                       ),
-                      child: const Text(
-                        'Add to Cart',
-                        style: TextStyle(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF21D4B4),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        '-${product.discountPercentage}%',
+                        style: const TextStyle(
+                          color: Colors.white,
                           fontSize: 12,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
               ],
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(
+                    product.name,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (product.discountPercentage != null) ...[
+                            Text(
+                              '\$${product.price.toStringAsFixed(2)}',
+                              style: TextStyle(
+                                fontSize: 10,
+                                decoration: TextDecoration.lineThrough,
+                                color: Colors.grey[600],
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 2),
+                          ],
+                          Text(
+                            '\$${(product.price * (1 - (product.discountPercentage ?? 0) / 100)).toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF21D4B4),
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ],

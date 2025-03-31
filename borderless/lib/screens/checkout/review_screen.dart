@@ -1,67 +1,92 @@
 import 'package:flutter/material.dart';
-import '../../widgets/animated_widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../blocs/cart/cart_bloc.dart';
+import '../../blocs/cart/cart_state.dart';
+import '../../blocs/shipping/shipping_bloc.dart';
+import '../../blocs/shipping/shipping_state.dart';
+import '../../models/cart_item.dart';
+import '../../widgets/checkout_stepper.dart';
+import '../order_success_screen.dart';
 
-class ReviewScreen extends StatelessWidget {
-  const ReviewScreen({Key? key}) : super(key: key);
+class CheckoutReviewScreen extends StatefulWidget {
+  const CheckoutReviewScreen({super.key});
 
-  Widget _buildProgressIndicator() {
-    return Row(
-      children: [
-        _buildProgressItem(
-          icon: Icons.local_shipping_outlined,
-          label: 'Shipping',
-          isDone: true,
-        ),
-        _buildProgressDivider(isActive: true),
-        _buildProgressItem(
-          icon: Icons.payment_outlined,
-          label: 'Payment',
-          isDone: true,
-        ),
-        _buildProgressDivider(isActive: true),
-        _buildProgressItem(
-          icon: Icons.check_circle_outline,
-          label: 'Review',
-          isActive: true,
-        ),
-      ],
-    );
-  }
+  @override
+  State<CheckoutReviewScreen> createState() => _CheckoutReviewScreenState();
+}
 
-  Widget _buildProgressItem({
-    required IconData icon,
-    required String label,
-    bool isActive = false,
-    bool isDone = false,
-  }) {
-    final color = isDone
-        ? const Color(0xFF00C566)
-        : isActive
-            ? const Color(0xFF00C566)
-            : Colors.grey[200];
-
-    return Expanded(
-      child: Column(
+class _CheckoutReviewScreenState extends State<CheckoutReviewScreen> {
+  Widget _buildCartItem(CartItem item) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
+          ClipRRect(
+            borderRadius: const BorderRadius.horizontal(
+              left: Radius.circular(12),
             ),
-            child: Icon(
-              isDone ? Icons.check : icon,
-              color: isDone || isActive ? Colors.white : Colors.grey,
-              size: 20,
+            child: Image.asset(
+              item.product.imageUrl,
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: isActive || isDone ? Colors.black : Colors.grey,
-              fontSize: 12,
-              fontWeight: isActive ? FontWeight.w500 : FontWeight.normal,
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.product.name,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${item.selectedSize} • ${item.selectedColor.value.toRadixString(16)}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '\$${item.totalPrice.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF21D4B4),
+                        ),
+                      ),
+                      Text(
+                        'x${item.quantity}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -69,18 +94,9 @@ class ReviewScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProgressDivider({required bool isActive}) {
+  Widget _buildOrderSummary() {
     return Container(
-      height: 1,
-      width: 30,
-      color: isActive ? const Color(0xFF00C566) : Colors.grey[300],
-      margin: const EdgeInsets.only(bottom: 24),
-    );
-  }
-
-  Widget _buildSection(String title, Widget child) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -95,155 +111,89 @@ class ReviewScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
+          const Text(
+            'Order Summary',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
             ),
           ),
-          const Divider(height: 1),
-          child,
-        ],
-      ),
-    );
-  }
+          const SizedBox(height: 16),
+          BlocBuilder<CartBloc, CartState>(
+            builder: (context, state) {
+              final subtotal = state.items.fold(
+                0.0,
+                (sum, item) => sum + (item.product.price * item.quantity),
+              );
+              const shippingCost = 5.00;
+              final total = subtotal + shippingCost;
 
-  Widget _buildOrderSummary() {
-    return _buildSection(
-      'Order Summary',
-      Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildSummaryRow('Subtotal', '\$299.00'),
-            const SizedBox(height: 8),
-            _buildSummaryRow('Shipping', '\$10.00'),
-            const SizedBox(height: 8),
-            _buildSummaryRow('Tax', '\$29.90'),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: Divider(),
-            ),
-            _buildSummaryRow(
-              'Total',
-              '\$338.90',
-              isTotal: true,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSummaryRow(String label, String value, {bool isTotal = false}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: isTotal ? 16 : 14,
-            fontWeight: isTotal ? FontWeight.w600 : FontWeight.normal,
-            color: Colors.black87,
-          ),
-        ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: isTotal ? 18 : 14,
-            fontWeight: isTotal ? FontWeight.w600 : FontWeight.w500,
-            color: isTotal ? const Color(0xFF00C566) : Colors.black87,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAddressSection(String title, String address) {
-    return _buildSection(
-      title,
-      Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE8FFF3),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(
-                Icons.location_on_outlined,
-                color: Color(0xFF00C566),
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                address,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.black87,
-                  height: 1.5,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPaymentMethod() {
-    return _buildSection(
-      'Payment Method',
-      Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE8FFF3),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Image.asset(
-                'assets/images/visa.png',
-                height: 24,
-              ),
-            ),
-            const SizedBox(width: 16),
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              return Column(
                 children: [
-                  Text(
-                    'Visa ending in 4242',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black87,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Subtotal',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      Text(
+                        '\$${subtotal.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 4),
-                  Text(
-                    'Expires 12/24',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Shipping',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      Text(
+                        '\$${shippingCost.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Divider(height: 32),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Total',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        '\$${total.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
-              ),
-            ),
-          ],
-        ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -251,96 +201,72 @@ class ReviewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        title: const Text('Review Order'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
         elevation: 0,
-        leading: ScaleOnTap(
-          onTap: () => Navigator.pop(context),
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.arrow_back, color: Colors.black),
-          ),
-        ),
-        title: const Text(
-          'Checkout',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
       ),
-      body: Column(
-        children: [
-          Padding(
+      body: BlocBuilder<CartBloc, CartState>(
+        builder: (context, state) {
+          return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
-            child: _buildProgressIndicator(),
-          ),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildSection(
-                  'Items (2)',
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.asset(
-                        'assets/images/watch.png',
-                        width: 60,
-                        height: 60,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    title: const Text(
-                      'Loop Silicone Strong Magnetic Watch',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    subtitle: const Text('\$19.25'),
+                const CheckoutStepper(currentStep: 3),
+                const SizedBox(height: 24),
+                const Text(
+                  'Order Items',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                _buildAddressSection(
-                  'Shipping Address',
-                  'Ahmad Khan\n+92 000-0000000\nSindh, Karachi, XYZ Address\nPostal Code: 75400',
-                ),
+                const SizedBox(height: 16),
+                ...state.items.map((item) => _buildCartItem(item)),
+                const SizedBox(height: 24),
                 _buildOrderSummary(),
-                _buildPaymentMethod(),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final orderId = DateTime.now()
+                          .millisecondsSinceEpoch
+                          .toString()
+                          .substring(7);
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        '/order-success',
+                        (route) => false,
+                        arguments: orderId,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Place Order',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: ScaleOnTap(
-              onTap: () {
-                // Place order logic
-              },
-              child: Container(
-                width: double.infinity,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Place Order',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

@@ -1,76 +1,32 @@
 import 'package:equatable/equatable.dart';
 import '../../models/product.dart';
 
-abstract class WishlistState {
-  final Set<String> wishlistItems;
-  final bool isLoading;
-  final String? error;
+abstract class WishlistState extends Equatable {
+  final List<Product>? items;
 
-  const WishlistState({
-    this.wishlistItems = const {},
-    this.isLoading = false,
-    this.error,
-  });
+  const WishlistState({this.items});
 
-  WishlistState copyWith({
-    Set<String>? wishlistItems,
-    bool? isLoading,
-    String? error,
-  });
+  @override
+  List<Object?> get props => [items];
 }
 
 class WishlistInitial extends WishlistState {
-  const WishlistInitial() : super();
-
-  @override
-  WishlistState copyWith({
-    Set<String>? wishlistItems,
-    bool? isLoading,
-    String? error,
-  }) {
-    return WishlistInitial();
-  }
+  const WishlistInitial() : super(items: const []);
 }
 
 class WishlistLoading extends WishlistState {
-  const WishlistLoading() : super(isLoading: true);
-
-  @override
-  WishlistState copyWith({
-    Set<String>? wishlistItems,
-    bool? isLoading,
-    String? error,
-  }) {
-    return WishlistLoading();
-  }
+  const WishlistLoading() : super();
 }
 
 class WishlistLoaded extends WishlistState {
-  const WishlistLoaded({
-    required Set<String> wishlistItems,
-  }) : super(wishlistItems: wishlistItems);
-
-  @override
-  WishlistState copyWith({
-    Set<String>? wishlistItems,
-    bool? isLoading,
-    String? error,
-  }) {
-    return WishlistLoaded(
-      wishlistItems: wishlistItems ?? this.wishlistItems,
-    );
-  }
+  const WishlistLoaded(List<Product> items) : super(items: items);
 }
 
 class WishlistError extends WishlistState {
-  const WishlistError(String error) : super(error: error);
+  final String message;
+
+  const WishlistError(this.message) : super();
 
   @override
-  WishlistState copyWith({
-    Set<String>? wishlistItems,
-    bool? isLoading,
-    String? error,
-  }) {
-    return WishlistError(error ?? this.error!);
-  }
+  List<Object?> get props => [message, items];
 }

@@ -13,103 +13,84 @@ class CheckoutStepper extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _buildStep(1, 'Shipping', Icons.local_shipping_outlined),
-          _buildDivider(1),
-          _buildStep(2, 'Payment', Icons.payment_outlined),
-          _buildDivider(2),
-          _buildStep(3, 'Review', Icons.check_circle_outline),
+          _buildStep(
+            icon: Icons.local_shipping_outlined,
+            label: 'Shipping',
+            isActive: currentStep == 1,
+            isCompleted: currentStep > 1,
+          ),
+          _buildDivider(isCompleted: currentStep > 1),
+          _buildStep(
+            icon: Icons.payment_outlined,
+            label: 'Payment',
+            isActive: currentStep == 2,
+            isCompleted: currentStep > 2,
+          ),
+          _buildDivider(isCompleted: currentStep > 2),
+          _buildStep(
+            icon: Icons.check_circle_outline,
+            label: 'Review',
+            isActive: currentStep == 3,
+            isCompleted: false,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildStep(int step, String label, IconData icon) {
-    final isActive = step == currentStep;
-    final isCompleted = step < currentStep;
-    final color =
-        isCompleted ? Colors.green : (isActive ? Colors.black : Colors.grey);
+  Widget _buildStep({
+    required IconData icon,
+    required String label,
+    required bool isActive,
+    required bool isCompleted,
+  }) {
+    final color = isCompleted
+        ? const Color(0xFF21D4B4)
+        : isActive
+            ? Colors.black
+            : Colors.grey;
 
-    return Expanded(
-      child: TweenAnimationBuilder<double>(
-        duration: const Duration(milliseconds: 300),
-        tween: Tween(begin: 0.0, end: 1.0),
-        builder: (context, value, child) {
-          return Transform.scale(
-            scale: step == currentStep ? (0.9 + (0.1 * value)) : 1.0,
-            child: Opacity(
-              opacity: value,
-              child: child,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: isActive || isCompleted ? color : Colors.transparent,
+            border: Border.all(
+              color: color,
+              width: 2,
             ),
-          );
-        },
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isCompleted
-                    ? Colors.green.withOpacity(0.1)
-                    : Colors.transparent,
-                border: Border.all(
-                  color: color,
-                  width: 2,
-                ),
-              ),
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return ScaleTransition(
-                    scale: animation,
-                    child: FadeTransition(
-                      opacity: animation,
-                      child: child,
-                    ),
-                  );
-                },
-                child: Icon(
-                  isCompleted ? Icons.check : icon,
-                  key: ValueKey<bool>(isCompleted),
-                  color: color,
-                  size: 20,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: 200),
-              style: TextStyle(
-                color: color,
-                fontSize: 12,
-                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-              ),
-              child: Text(label),
-            ),
-          ],
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            isCompleted ? Icons.check : icon,
+            color: isActive || isCompleted ? Colors.white : color,
+            size: 20,
+          ),
         ),
-      ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            color: color,
+            fontSize: 12,
+            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildDivider(int beforeStep) {
-    final isCompleted = beforeStep < currentStep;
+  Widget _buildDivider({required bool isCompleted}) {
     return Expanded(
-      child: TweenAnimationBuilder<double>(
-        duration: const Duration(milliseconds: 300),
-        tween: Tween(begin: 0.0, end: 1.0),
-        builder: (context, value, child) {
-          return Container(
-            height: 2,
-            color: Color.lerp(
-              Colors.grey[300],
-              isCompleted ? Colors.green : Colors.grey[300],
-              value,
-            ),
-          );
-        },
+      child: Container(
+        height: 2,
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        color: isCompleted ? const Color(0xFF21D4B4) : Colors.grey[300],
       ),
     );
   }
