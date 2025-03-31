@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'dart:math'; // For OTP generation
+import 'dart:math';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -11,7 +11,7 @@ class AuthService {
     return (100000 + random.nextInt(900000)).toString(); // 6-digit OTP
   }
 
-  // Email/Password Sign-Up with OTP (simulated for now)
+  // Email/Password Sign-Up with OTP
   Future<Map<String, dynamic>?> signUpWithEmail(String email, String password) async {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
@@ -19,12 +19,11 @@ class AuthService {
         password: password,
       );
       String otp = _generateOTP();
-      await result.user?.sendEmailVerification(); // Firebase email verification link
-      // Simulate sending OTP (replace with actual email service later if needed)
-      print("Generated OTP: $otp"); // For debugging; in reality, send via email
+      await result.user?.sendEmailVerification(); // Sends Firebase verification link
+      print("Generated OTP for $email: $otp"); // Simulate OTP sending (replace with email service)
       return {
         'user': result.user,
-        'otp': otp, // Return OTP for verification screen
+        'otp': otp,
       };
     } on FirebaseAuthException catch (e) {
       String errorMessage;
@@ -77,6 +76,26 @@ class AuthService {
     }
   }
 
+  // Google Sign-In
+  Future<User?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) return null;
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      UserCredential result = await _auth.signInWithCredential(credential);
+      return result.user;
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
   // Sign Out
   Future<void> signOut() async {
     await _auth.signOut();
@@ -87,7 +106,7 @@ class AuthService {
     return _auth.currentUser?.emailVerified ?? false;
   }
 
-  // Verify OTP (simulated for now)
+  // Verify OTP
   Future<bool> verifyOTP(String inputOTP, String sentOTP) async {
     await Future.delayed(Duration(seconds: 1)); // Simulate server delay
     return inputOTP == sentOTP;
