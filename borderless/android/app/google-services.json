@@ -12,7 +12,20 @@
           "package_name": "com.borderless.borderless"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "278341916342-ta7h6so86f4s7ic376dlromn84k9plnm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.borderless.borderless",
+            "certificate_hash": "d00eadde6c343cdb292979d315540233dbae672e"
+          }
+        },
+        {
+          "client_id": "278341916342-33afn02vdtl0fblnk4eu7q16ha8ugu8r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyApVPjh1bekCzrVuMq1zdl4IlNe55tu-oI"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "278341916342-33afn02vdtl0fblnk4eu7q16ha8ugu8r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
