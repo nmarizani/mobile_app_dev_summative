@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart'; // Add this import for UserProvider
+import 'package:provider/provider.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_event.dart';
 import '../../services/auth_service.dart';
-import '../../../main.dart'; // Import UserProvider from main.dart
+import '../../../main.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -32,6 +32,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final result = await authService.signUpWithEmail(
       _emailController.text,
       _passwordController.text,
+      _fullNameController.text, // Pass fullName to signUpWithEmail
     );
 
     if (mounted) {
