@@ -4,6 +4,7 @@ import 'dart:math';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   // Generate a 6-digit OTP
   String _generateOTP() {
@@ -76,11 +77,13 @@ class AuthService {
     }
   }
 
-  // Google Sign-In
-  Future<User?> signInWithGoogle() async {
+  // Google Sign-In (Updated to return Map for consistency)
+  Future<Map<String, dynamic>?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) return null;
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        return {'error': 'Google Sign-In cancelled by user.'}; // User cancelled
+      }
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
@@ -89,16 +92,31 @@ class AuthService {
       );
 
       UserCredential result = await _auth.signInWithCredential(credential);
-      return result.user;
+      return {'user': result.user};
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      switch (e.code) {
+        case 'account-exists-with-different-credential':
+          errorMessage = 'Account exists with a different sign-in method.';
+          break;
+        case 'invalid-credential':
+          errorMessage = 'Invalid Google credentials.';
+          break;
+        default:
+          errorMessage = 'Google Sign-In failed. Please try again.';
+      }
+      print(e.toString());
+      return {'error': errorMessage};
     } catch (e) {
       print(e.toString());
-      return null;
+      return {'error': 'An unexpected error occurred during Google Sign-In.'};
     }
   }
 
-  // Sign Out
+  // Sign Out (Updated to sign out from Google as well)
   Future<void> signOut() async {
-    await _auth.signOut();
+    await _googleSignIn.signOut(); // Sign out from Google
+    await _auth.signOut(); // Sign out from Firebase
   }
 
   // Check if email is verified
