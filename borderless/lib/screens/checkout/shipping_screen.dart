@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart'; // Add this import for UserProvider
 import '../../widgets/checkout_stepper.dart';
 import '../../blocs/shipping/shipping_bloc.dart';
 import '../../blocs/shipping/shipping_event.dart';
 import '../../blocs/shipping/shipping_state.dart';
+import '../../../main.dart'; // Import UserProvider from main.dart
 
 class CheckoutShippingScreen extends StatefulWidget {
   const CheckoutShippingScreen({super.key});
@@ -120,13 +122,18 @@ class _CheckoutShippingScreenState extends State<CheckoutShippingScreen> {
   void initState() {
     super.initState();
     context.read<ShippingBloc>().add(LoadSavedAddress());
+    // Pre-fill name from UserProvider if available and not already set
+    final user = context.read<UserProvider>().user;
+    if (user != null && _nameController.text.isEmpty) {
+      _nameController.text = user.displayName ?? '';
+    }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final address = context.read<ShippingBloc>().state.address;
-    _nameController.text = address.fullName ?? '';
+    _nameController.text = address.fullName ?? _nameController.text; // Preserve UserProvider value if no saved address
     _phoneController.text = address.phoneNumber ?? '';
     _streetController.text = address.streetAddress ?? '';
     _postalCodeController.text = address.postalCode ?? '';
@@ -155,7 +162,7 @@ class _CheckoutShippingScreenState extends State<CheckoutShippingScreen> {
     final countryData = _countries[_selectedCountry]!;
     final provinces = _provinces[_selectedCountry] ?? [];
     final cities =
-        _selectedProvince != null ? _cities[_selectedProvince] ?? [] : [];
+    _selectedProvince != null ? _cities[_selectedProvince] ?? [] : [];
 
     return Scaffold(
       appBar: AppBar(
@@ -256,7 +263,7 @@ class _CheckoutShippingScreenState extends State<CheckoutShippingScreen> {
                             border: const OutlineInputBorder(),
                             prefixIcon: Container(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 12),
+                              const EdgeInsets.symmetric(horizontal: 12),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -289,12 +296,12 @@ class _CheckoutShippingScreenState extends State<CheckoutShippingScreen> {
                             border: OutlineInputBorder(),
                           ),
                           items: provinces.map<DropdownMenuItem<String>>(
-                              (dynamic province) {
-                            return DropdownMenuItem<String>(
-                              value: province as String,
-                              child: Text(province as String),
-                            );
-                          }).toList(),
+                                  (dynamic province) {
+                                return DropdownMenuItem<String>(
+                                  value: province as String,
+                                  child: Text(province as String),
+                                );
+                              }).toList(),
                           onChanged: (String? newValue) {
                             setState(() {
                               _selectedProvince = newValue;
