@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Generate a 6-digit OTP
   String _generateOTP() {
@@ -13,19 +15,25 @@ class AuthService {
   }
 
   // Email/Password Sign-Up with OTP
-  Future<Map<String, dynamic>?> signUpWithEmail(String email, String password) async {
+  Future<Map<String, dynamic>?> signUpWithEmail(String email, String password, String fullName) async {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      String otp = _generateOTP();
-      await result.user?.sendEmailVerification(); // Sends Firebase verification link
-      print("Generated OTP for $email: $otp"); // Simulate OTP sending (replace with email service)
-      return {
-        'user': result.user,
-        'otp': otp,
-      };
+      User? user = result.user;
+      if (user != null) {
+        // Save user data to Firestore
+        await createUser(user.uid, email, fullName);
+        String otp = _generateOTP();
+        await user.sendEmailVerification(); // Sends Firebase verification link
+        print("Generated OTP for $email: $otp"); // Simulate OTP sending (replace with email service)
+        return {
+          'user': user,
+          'otp': otp,
+        };
+      }
+      return null;
     } on FirebaseAuthException catch (e) {
       String errorMessage;
       switch (e.code) {
@@ -92,7 +100,16 @@ class AuthService {
       );
 
       UserCredential result = await _auth.signInWithCredential(credential);
-      return {'user': result.user};
+      User? user = result.user;
+      if (user != null) {
+        // Check if user exists in Firestore, create if not
+        DocumentSnapshot doc = await _firestore.collection('users').doc(user.uid).get();
+        if (!doc.exists) {
+          await createUser(user.uid, user.email ?? '', user.displayName ?? '');
+        }
+        return {'user': user};
+      }
+      return null;
     } on FirebaseAuthException catch (e) {
       String errorMessage;
       switch (e.code) {
@@ -111,6 +128,16 @@ class AuthService {
       print(e.toString());
       return {'error': 'An unexpected error occurred during Google Sign-In.'};
     }
+  }
+
+  // Create user in Firestore
+  Future<void> createUser(String uid, String email, String fullName) async {
+    await _firestore.collection('users').doc(uid).set({
+      'email': email,
+      'fullName': fullName,
+      'role': 'customer',
+      'createdAt': FieldValue.serverTimestamp(),
+    });
   }
 
   // Sign Out (Updated to sign out from Google as well)
