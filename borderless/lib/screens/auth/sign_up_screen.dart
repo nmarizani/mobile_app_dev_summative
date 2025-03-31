@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart'; // Add this import for UserProvider
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_event.dart';
-import '../../services/auth_service.dart'; // Import AuthService
+import '../../services/auth_service.dart';
+import '../../../main.dart'; // Import UserProvider from main.dart
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -38,6 +40,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       });
 
       if (result != null && result.containsKey('user')) {
+        // Update UserProvider with the authenticated user
+        context.read<UserProvider>().setUser(result['user']);
         // Navigate to email verification with OTP
         Navigator.pushNamed(
           context,
@@ -45,7 +49,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           arguments: {
             'email': _emailController.text,
             'isForgotPassword': false,
-            'otp': result['otp'], // Pass the OTP
+            'otp': result['otp'],
           },
         );
       } else {
@@ -73,6 +77,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       });
 
       if (result != null && result.containsKey('user')) {
+        // Update UserProvider with the authenticated user
+        context.read<UserProvider>().setUser(result['user']);
         context.read<AuthBloc>().add(GoogleSignIn());
         Navigator.pushNamedAndRemoveUntil(
           context,
