@@ -236,7 +236,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        Navigator.pushNamed(context, '/email-verification');
+                        Navigator.pushNamed(
+                          context,
+                          '/email-verification',
+                          arguments: {
+                            'email': _emailController.text,
+                            'isForgotPassword': false,
+                          },
+                        );
                       }
                     },
                     style: ElevatedButton.styleFrom(

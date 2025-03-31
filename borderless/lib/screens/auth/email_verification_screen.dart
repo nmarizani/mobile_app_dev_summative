@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'password_success_screen.dart';
+import '../../services/auth_service.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
   final bool isForgotPassword;
@@ -24,6 +24,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
   bool _showToast = true;
   bool _isLoading = false;
   String? _error;
+  final _authService = AuthService();
 
   @override
   void initState() {
@@ -84,36 +85,43 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
     });
 
     try {
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 1));
-
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-
-        if (widget.isForgotPassword) {
-          // Navigate to password success screen for forgot password flow
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const PasswordSuccessScreen(),
-            ),
-          );
+      if (widget.isForgotPassword) {
+        // For forgot password flow
+        await _authService.verifyCodeAndResetPassword(
+          email,
+          code,
+          'newPassword123', // This should come from the new password screen
+        );
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/password-success');
+        }
+      } else {
+        // For sign up flow
+        final isVerified = await _authService.isEmailVerified();
+        if (isVerified) {
+          if (mounted) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/home',
+              (route) => false,
+            );
+          }
         } else {
-          // Navigate to home screen for signup flow
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            '/home',
-            (route) => false,
-          );
+          setState(() {
+            _error = 'Please verify your email first';
+          });
         }
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _isLoading = false;
           _error = 'Invalid verification code. Please try again.';
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
         });
       }
     }
@@ -125,9 +133,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
     });
 
     try {
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 1));
-
+      await _authService.sendVerificationCode(email);
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -158,7 +164,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
 
   @override
   Widget build(BuildContext context) {
-    final email = ModalRoute.of(context)?.settings.arguments as String? ?? '';
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final email = args?['email'] as String? ?? '';
 
     return Scaffold(
       backgroundColor: Colors.white,

@@ -31,6 +31,42 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
       return;
     }
 
+    // Add password validation
+    if (_passwordController.text.length < 8) {
+      setState(() {
+        _error = 'Password must be at least 8 characters long';
+      });
+      return;
+    }
+
+    if (!_passwordController.text.contains(RegExp(r'[A-Z]'))) {
+      setState(() {
+        _error = 'Password must contain at least one uppercase letter';
+      });
+      return;
+    }
+
+    if (!_passwordController.text.contains(RegExp(r'[a-z]'))) {
+      setState(() {
+        _error = 'Password must contain at least one lowercase letter';
+      });
+      return;
+    }
+
+    if (!_passwordController.text.contains(RegExp(r'[0-9]'))) {
+      setState(() {
+        _error = 'Password must contain at least one number';
+      });
+      return;
+    }
+
+    if (!_passwordController.text.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+      setState(() {
+        _error = 'Password must contain at least one special character';
+      });
+      return;
+    }
+
     if (_passwordController.text != _confirmPasswordController.text) {
       setState(() {
         _error = 'Passwords do not match';
@@ -191,6 +227,18 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(
+                        'Password must contain:\n• At least 8 characters\n• One uppercase letter\n• One lowercase letter\n• One number\n• One special character',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                          height: 1.5,
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 24),
                     Column(

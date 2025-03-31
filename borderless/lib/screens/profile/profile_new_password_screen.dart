@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
-class NewPasswordScreen extends StatefulWidget {
-  const NewPasswordScreen({Key? key}) : super(key: key);
+class ProfileNewPasswordScreen extends StatefulWidget {
+  const ProfileNewPasswordScreen({Key? key}) : super(key: key);
 
   @override
-  State<NewPasswordScreen> createState() => _NewPasswordScreenState();
+  State<ProfileNewPasswordScreen> createState() =>
+      _ProfileNewPasswordScreenState();
 }
 
-class _NewPasswordScreenState extends State<NewPasswordScreen> {
+class _ProfileNewPasswordScreenState extends State<ProfileNewPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
