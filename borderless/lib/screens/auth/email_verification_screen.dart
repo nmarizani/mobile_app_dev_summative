@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../services/auth_service.dart';
+import 'password_success_screen.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
   final bool isForgotPassword;
-  final String email;
   const EmailVerificationScreen({
     super.key,
     this.isForgotPassword = false,
-    required this.email,
   });
 
   @override
@@ -26,7 +24,6 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
   bool _showToast = true;
   bool _isLoading = false;
   String? _error;
-  final _authService = AuthService();
 
   @override
   void initState() {
@@ -87,43 +84,31 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
     });
 
     try {
-      if (widget.isForgotPassword) {
-        // For forgot password flow
-        await _authService.verifyCodeAndResetPassword(
-          widget.email,
-          code,
-          'newPassword123', // This should come from the new password screen
-        );
-        if (mounted) {
-          Navigator.pushReplacementNamed(context, '/password-success');
-        }
-      } else {
-        // For sign up flow
-        final isVerified = await _authService.isEmailVerified();
-        if (isVerified) {
-          if (mounted) {
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              '/home',
-              (route) => false,
-            );
-          }
+      // Simulate API call
+      await Future.delayed(const Duration(seconds: 1));
+
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        if (widget.isForgotPassword) {
+          // Navigate to reset password screen for forgot password flow
+          Navigator.pushReplacementNamed(context, '/reset-password');
         } else {
-          setState(() {
-            _error = 'Please verify your email first';
-          });
+          // Navigate to home screen for signup flow
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/home',
+            (route) => false,
+          );
         }
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Invalid verification code. Please try again.';
-        });
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
           _isLoading = false;
+          _error = 'Invalid verification code. Please try again.';
         });
       }
     }
@@ -135,7 +120,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
     });
 
     try {
-      await _authService.sendVerificationCode(widget.email);
+      // Simulate API call
+      await Future.delayed(const Duration(seconds: 1));
+
       if (mounted) {
         setState(() {
           _isLoading = false;
