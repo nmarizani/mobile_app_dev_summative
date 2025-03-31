@@ -26,36 +26,44 @@ class OnboardingBackground extends StatelessWidget {
             ),
           ),
         ),
-        Column(
-          children: [
-            Expanded(
-              child: Column(
-                children: [
-                  Expanded(child: SafeArea(child: child)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      totalPages,
-                      (index) => Container(
-                        width: 8,
-                        height: 8,
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: index == currentPage
-                              ? Colors.black
-                              : Colors.grey.shade300,
-                        ),
+        SafeArea(
+          child: Column(
+            children: [
+              /// ✅ Wrap in Flexible to prevent layout overflow
+              Flexible(child: child),
+
+              /// Pagination Indicators
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    totalPages,
+                    (index) => Container(
+                      width: 8,
+                      height: 8,
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: index == currentPage
+                            ? Colors.black
+                            : Colors.grey.shade300,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32),
-                ],
+                ),
               ),
-            ),
-          ],
+
+              /// ✅ Prevent overflow by adding Spacer() before bottom padding
+              const Spacer(),
+
+              /// Adjust the bottom spacing to be more dynamic
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ],
     );
   }
 }
+

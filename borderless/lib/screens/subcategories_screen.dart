@@ -80,7 +80,7 @@ class SubcategoriesScreen extends StatelessWidget {
             name: 'Living Room',
             description: 'Sofas, tables, and storage',
             price: 799.99,
-            imageUrl: 'assets/images/subcategories/sofa.png',
+            imageUrl: 'assets/images/subcategories/living_room.png',
             category: category,
             products: [
               {

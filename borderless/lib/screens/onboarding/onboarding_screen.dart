@@ -71,7 +71,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             );
                           },
                         ),
-                      if (_currentPage < 2)
+                      if (_currentPage < _pages.length - 1)
                         TextButton(
                           onPressed: () {
                             Navigator.pushReplacement(
@@ -80,10 +80,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   builder: (context) => const SignUpScreen()),
                             );
                           },
-                          child: Text(
+                          child: const Text(
                             'Skip for now',
                             style: TextStyle(
-                              color: const Color(0xFF21D4B4),
+                              color: Color(0xFF21D4B4),
                               fontSize: 14,
                             ),
                           ),
@@ -112,7 +112,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
                     children: [
-                      if (_currentPage < 2)
+                      if (_currentPage < _pages.length - 1)
                         SizedBox(
                           width: double.infinity,
                           height: 56,
@@ -256,37 +256,39 @@ class _OnboardingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            data.image,
-            height: 240,
-            fit: BoxFit.contain,
-          ),
-          const SizedBox(height: 40),
-          Text(
-            data.title,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: isDark ? Colors.white : Colors.black,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              data.image,
+              height: 240,
+              fit: BoxFit.contain,
             ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            data.description,
-            style: TextStyle(
-              fontSize: 16,
-              color: isDark ? Colors.white70 : Colors.grey[600],
-              height: 1.5,
+            const SizedBox(height: 40),
+            Text(
+              data.title,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : Colors.black,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+            const SizedBox(height: 16),
+            Text(
+              data.description,
+              style: TextStyle(
+                fontSize: 16,
+                color: isDark ? Colors.white70 : Colors.grey[600],
+                height: 1.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

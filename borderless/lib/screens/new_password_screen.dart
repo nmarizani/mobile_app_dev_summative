@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'password_success_screen.dart';
+import 'auth/password_success_screen.dart';
 
 class NewPasswordScreen extends StatefulWidget {
   const NewPasswordScreen({super.key});
