@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart'; // Add this import for UserProvider
+import 'package:provider/provider.dart';
 import '../../widgets/checkout_stepper.dart';
 import '../../blocs/shipping/shipping_bloc.dart';
 import '../../blocs/shipping/shipping_event.dart';
 import '../../blocs/shipping/shipping_state.dart';
-import '../../../main.dart'; // Import UserProvider from main.dart
+import '../../../main.dart';
+import '../../services/firestore_service.dart'; // Add FirestoreService import
 
 class CheckoutShippingScreen extends StatefulWidget {
   const CheckoutShippingScreen({super.key});
@@ -23,6 +24,9 @@ class _CheckoutShippingScreenState extends State<CheckoutShippingScreen> {
   String? _selectedProvince;
   String? _selectedCity;
   String _selectedCountry = 'Kenya';
+  bool _isLoadingUserData = true;
+
+  final FirestoreService _firestoreService = FirestoreService();
 
   // Map of African countries with their country codes and flag emojis
   final Map<String, Map<String, String>> _countries = {
@@ -30,7 +34,7 @@ class _CheckoutShippingScreenState extends State<CheckoutShippingScreen> {
     'Nigeria': {'code': '+234', 'flag': '🇳🇬'},
     'South Africa': {'code': '+27', 'flag': '🇿🇦'},
     'Egypt': {'code': '+20', 'flag': '🇪🇬'},
-    'Morocco': {'code': '+212', 'flag': '🇲🇦'},
+    'Morocco': {'code': '+212', 'flag': '🇲🇪'},
     'Ghana': {'code': '+233', 'flag': '🇬🇭'},
     'Tanzania': {'code': '+255', 'flag': '🇹🇿'},
     'Ethiopia': {'code': '+251', 'flag': '🇪🇹'},
@@ -122,10 +126,33 @@ class _CheckoutShippingScreenState extends State<CheckoutShippingScreen> {
   void initState() {
     super.initState();
     context.read<ShippingBloc>().add(LoadSavedAddress());
-    // Pre-fill name from UserProvider if available and not already set
+    _loadUserData(); // Fetch user data from Firestore
+  }
+
+  Future<void> _loadUserData() async {
     final user = context.read<UserProvider>().user;
     if (user != null && _nameController.text.isEmpty) {
-      _nameController.text = user.displayName ?? '';
+      try {
+        final userData = await _firestoreService.getUser(user.uid);
+        if (userData != null && userData['fullName'] != null) {
+          setState(() {
+            _nameController.text = userData['fullName'];
+            _isLoadingUserData = false;
+          });
+        }
+      } catch (e) {
+        print('Error fetching user data: $e');
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoadingUserData = false;
+          });
+        }
+      }
+    } else {
+      setState(() {
+        _isLoadingUserData = false;
+      });
     }
   }
 
@@ -133,7 +160,10 @@ class _CheckoutShippingScreenState extends State<CheckoutShippingScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final address = context.read<ShippingBloc>().state.address;
-    _nameController.text = address.fullName ?? _nameController.text; // Preserve UserProvider value if no saved address
+    // Only overwrite name if no Firestore data was loaded yet
+    if (_nameController.text.isEmpty || !_isLoadingUserData) {
+      _nameController.text = address.fullName ?? _nameController.text;
+    }
     _phoneController.text = address.phoneNumber ?? '';
     _streetController.text = address.streetAddress ?? '';
     _postalCodeController.text = address.postalCode ?? '';
@@ -177,7 +207,7 @@ class _CheckoutShippingScreenState extends State<CheckoutShippingScreen> {
       ),
       body: BlocBuilder<ShippingBloc, ShippingState>(
         builder: (context, state) {
-          if (state.isLoading) {
+          if (state.isLoading || _isLoadingUserData) {
             return const Center(child: CircularProgressIndicator());
           }
 
