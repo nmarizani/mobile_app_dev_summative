@@ -4,9 +4,11 @@ import '../../services/auth_service.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
   final bool isForgotPassword;
+  final String email;
   const EmailVerificationScreen({
     super.key,
     this.isForgotPassword = false,
+    required this.email,
   });
 
   @override
@@ -88,7 +90,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
       if (widget.isForgotPassword) {
         // For forgot password flow
         await _authService.verifyCodeAndResetPassword(
-          email,
+          widget.email,
           code,
           'newPassword123', // This should come from the new password screen
         );
@@ -133,7 +135,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
     });
 
     try {
-      await _authService.sendVerificationCode(email);
+      await _authService.sendVerificationCode(widget.email);
       if (mounted) {
         setState(() {
           _isLoading = false;
