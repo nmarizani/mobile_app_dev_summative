@@ -1,9 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
+import '../../services/auth_service.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc() : super(const AuthInitial()) {
+  final AuthService _authService;
+
+  AuthBloc({required AuthService authService})
+      : _authService = authService,
+        super(const AuthInitial()) {
     on<Login>(_onLogin);
     on<Logout>(_onLogout);
     on<SignUp>(_onSignUp);
@@ -11,68 +16,90 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<CheckAuth>(_onCheckAuth);
   }
 
-  void _onLogin(Login event, Emitter<AuthState> emit) async {
+  Future<void> _onLogin(Login event, Emitter<AuthState> emit) async {
     emit(const AuthLoading());
     try {
-      // TODO: Implement actual login logic
-      await Future.delayed(const Duration(seconds: 1));
-      emit(Authenticated(
-        userId: '1',
-        name: 'John Doe',
-        email: event.email,
-      ));
+      final result = await _authService.signInWithEmail(event.email, event.password);
+      if (result != null && result.containsKey('user')) {
+        final user = result['user'];
+        emit(Authenticated(
+          userId: user.uid,
+          name: user.displayName ?? 'User',
+          email: user.email ?? event.email,
+        ));
+      } else {
+        emit(AuthError(result?['error'] ?? 'Login failed'));
+      }
     } catch (e) {
       emit(AuthError(e.toString()));
     }
   }
 
-  void _onLogout(Logout event, Emitter<AuthState> emit) async {
+  Future<void> _onLogout(Logout event, Emitter<AuthState> emit) async {
     emit(const AuthLoading());
     try {
-      // TODO: Implement actual logout logic
-      await Future.delayed(const Duration(milliseconds: 500));
+      await _authService.signOut();
       emit(const Unauthenticated());
     } catch (e) {
       emit(AuthError(e.toString()));
     }
   }
 
-  void _onSignUp(SignUp event, Emitter<AuthState> emit) async {
+  Future<void> _onSignUp(SignUp event, Emitter<AuthState> emit) async {
     emit(const AuthLoading());
     try {
-      // TODO: Implement actual signup logic
-      await Future.delayed(const Duration(seconds: 1));
-      emit(Authenticated(
-        userId: '1',
-        name: event.name,
-        email: event.email,
-      ));
+      final result = await _authService.signUpWithEmail(
+        event.email,
+        event.password,
+        event.name,
+      );
+      if (result != null && result.containsKey('user')) {
+        final user = result['user'];
+        emit(Authenticated(
+          userId: user.uid,
+          name: event.name,
+          email: event.email,
+        ));
+      } else {
+        emit(AuthError(result?['error'] ?? 'Sign-up failed'));
+      }
     } catch (e) {
       emit(AuthError(e.toString()));
     }
   }
 
-  void _onGoogleSignIn(GoogleSignIn event, Emitter<AuthState> emit) async {
+  Future<void> _onGoogleSignIn(GoogleSignIn event, Emitter<AuthState> emit) async {
     emit(const AuthLoading());
     try {
-      // TODO: Implement actual Google sign in logic
-      await Future.delayed(const Duration(seconds: 1));
-      emit(Authenticated(
-        userId: '1',
-        name: 'Google User',
-        email: 'google.user@example.com',
-      ));
+      final result = await _authService.signInWithGoogle();
+      if (result != null && result.containsKey('user')) {
+        final user = result['user'];
+        emit(Authenticated(
+          userId: user.uid,
+          name: user.displayName ?? 'Google User',
+          email: user.email ?? '',
+        ));
+      } else {
+        emit(AuthError(result?['error'] ?? 'Google Sign-In failed'));
+      }
     } catch (e) {
       emit(AuthError(e.toString()));
     }
   }
 
-  void _onCheckAuth(CheckAuth event, Emitter<AuthState> emit) async {
+  Future<void> _onCheckAuth(CheckAuth event, Emitter<AuthState> emit) async {
     emit(const AuthLoading());
     try {
-      // TODO: Check if user is logged in
-      await Future.delayed(const Duration(milliseconds: 500));
-      emit(const Unauthenticated());
+      final user = _authService.currentUser;
+      if (user != null) {
+        emit(Authenticated(
+          userId: user.uid,
+          name: user.displayName ?? 'User',
+          email: user.email ?? '',
+        ));
+      } else {
+        emit(const Unauthenticated());
+      }
     } catch (e) {
       emit(AuthError(e.toString()));
     }

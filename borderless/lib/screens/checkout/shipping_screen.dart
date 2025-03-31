@@ -5,8 +5,8 @@ import '../../widgets/checkout_stepper.dart';
 import '../../blocs/shipping/shipping_bloc.dart';
 import '../../blocs/shipping/shipping_event.dart';
 import '../../blocs/shipping/shipping_state.dart';
-import '../../../main.dart';
-import '../../services/firestore_service.dart'; // Add FirestoreService import
+import '../../services/firestore_service.dart';
+import '../../providers/user_provider.dart';
 
 class CheckoutShippingScreen extends StatefulWidget {
   const CheckoutShippingScreen({super.key});
