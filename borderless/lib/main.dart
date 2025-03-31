@@ -30,7 +30,8 @@ import 'blocs/shipping/shipping_bloc.dart';
 import 'screens/categories_screen.dart';
 import 'screens/search_screen.dart';
 
-void main() async { // Added 'async' to make main asynchronous
+void main() async {
+  // Added 'async' to make main asynchronous
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Firebase
@@ -83,22 +84,11 @@ class MyApp extends StatelessWidget {
               '/login': (context) => const LoginScreen(),
               '/signup': (context) => const SignUpScreen(),
               '/home': (context) => const HomeScreen(),
-<<<<<<< HEAD
               '/email-verification': (context) =>
-              const EmailVerificationScreen(),
+                  const EmailVerificationScreen(),
               '/forgot-password': (context) => const ForgotPasswordScreen(),
               '/forgot-password-verification': (context) =>
-              const ForgotPasswordVerificationScreen(),
-=======
-              '/email-verification': (context) {
-                final args = ModalRoute.of(context)!.settings.arguments
-                    as Map<String, dynamic>?;
-                return EmailVerificationScreen(
-                  isForgotPassword: args?['isForgotPassword'] ?? false,
-                );
-              },
-              '/forgot-password': (context) => const ForgotPasswordScreen(),
->>>>>>> f76c88d (Changes)
+                  const ForgotPasswordVerificationScreen(),
               '/new-password': (context) => const NewPasswordScreen(),
               '/password-success': (context) => const PasswordSuccessScreen(),
               '/shipping-address': (context) => const ProfileShippingScreen(),
@@ -110,12 +100,12 @@ class MyApp extends StatelessWidget {
               '/search': (context) => const SearchScreen(),
               '/order-success': (context) {
                 final orderId =
-                ModalRoute.of(context)!.settings.arguments as String;
+                    ModalRoute.of(context)!.settings.arguments as String;
                 return OrderSuccessScreen(orderId: orderId);
               },
               '/order-tracking': (context) {
                 final orderId =
-                ModalRoute.of(context)!.settings.arguments as String;
+                    ModalRoute.of(context)!.settings.arguments as String;
                 return OrderTrackingScreen(orderId: orderId);
               },
             },
