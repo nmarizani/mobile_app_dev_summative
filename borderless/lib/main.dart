@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_core/firebase_core.dart'; // Added Firebase Core import
 import 'blocs/auth/auth_bloc.dart';
 import 'blocs/cart/cart_bloc.dart';
 import 'blocs/products/products_bloc.dart';
@@ -28,8 +29,11 @@ import 'screens/order_success_screen.dart';
 import 'blocs/shipping/shipping_bloc.dart';
 import 'screens/categories_screen.dart';
 
-void main() {
+void main() async { // Added 'async' to make main asynchronous
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp(); // Added Firebase initialization
 
   // Set preferred orientations to portrait only
   SystemChrome.setPreferredOrientations([
@@ -79,10 +83,10 @@ class MyApp extends StatelessWidget {
               '/signup': (context) => const SignUpScreen(),
               '/home': (context) => const HomeScreen(),
               '/email-verification': (context) =>
-                  const EmailVerificationScreen(),
+              const EmailVerificationScreen(),
               '/forgot-password': (context) => const ForgotPasswordScreen(),
               '/forgot-password-verification': (context) =>
-                  const ForgotPasswordVerificationScreen(),
+              const ForgotPasswordVerificationScreen(),
               '/new-password': (context) => const NewPasswordScreen(),
               '/password-success': (context) => const PasswordSuccessScreen(),
               '/shipping-address': (context) => const ProfileShippingScreen(),
@@ -93,12 +97,12 @@ class MyApp extends StatelessWidget {
               '/categories': (context) => const CategoriesScreen(),
               '/order-success': (context) {
                 final orderId =
-                    ModalRoute.of(context)!.settings.arguments as String;
+                ModalRoute.of(context)!.settings.arguments as String;
                 return OrderSuccessScreen(orderId: orderId);
               },
               '/order-tracking': (context) {
                 final orderId =
-                    ModalRoute.of(context)!.settings.arguments as String;
+                ModalRoute.of(context)!.settings.arguments as String;
                 return OrderTrackingScreen(orderId: orderId);
               },
             },
