@@ -16,6 +16,8 @@ import 'presentation/pages/auth/email_verification_page.dart';
 import 'presentation/pages/auth/new_password_page.dart';
 import 'presentation/pages/auth/password_success_page.dart';
 import 'presentation/pages/home_page.dart';
+import 'presentation/pages/business/business_dashboard_page.dart';
+import 'presentation/pages/business/business_profile_page.dart';
 import 'core/services/firebase_service.dart';
 
 void main() async {
@@ -81,6 +83,10 @@ class MyApp extends StatelessWidget {
           },
           '/password-success': (context) => const PasswordSuccessPage(),
           '/home': (context) => const AuthGuard(child: HomePage()),
+          '/business-dashboard':
+              (context) => const AuthGuard(child: BusinessDashboardPage()),
+          '/business-profile':
+              (context) => const AuthGuard(child: BusinessProfilePage()),
         },
       ),
     );
